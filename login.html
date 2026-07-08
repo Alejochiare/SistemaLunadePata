@@ -6,6 +6,24 @@
   <title>Iniciar sesión — Luna de Plata</title>
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/login.css">
+  <style>
+    body.login-page { background: #111110; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; color: #f5f5f5; }
+    .login-wrapper { width: 100%; max-width: 420px; }
+    .login-card { background: #111110; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 32px; box-shadow: 0 32px 80px rgba(0,0,0,0.25); }
+    .login-brand-name { font-size: 36px; color: #fff; font-family: 'DM Serif Display', Georgia, serif; text-align: center; }
+    .login-brand-sub { color: #c8a96e; text-align: center; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; font-size: 12px; }
+    .login-title { font-size: 28px; color: #fff; margin-bottom: 8px; }
+    .login-subtitle { font-size: 14px; color: #b8b8b4; margin-bottom: 24px; }
+    .login-field { margin-bottom: 18px; }
+    .login-label { display: block; margin-bottom: 8px; color: #d4d4d2; font-size: 13px; }
+    .login-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: #fff; }
+    .login-input::placeholder { color: rgba(255,255,255,0.55); }
+    .login-btn { width: 100%; padding: 12px 16px; margin-top: 8px; border-radius: 12px; background: #c8a96e; color: #111110; font-weight: 700; cursor: pointer; border: none; }
+    .login-btn:hover { opacity: 0.95; }
+    .login-footer { text-align: center; margin-top: 26px; color: rgba(255,255,255,0.45); font-size: 12px; }
+    .login-error { display: none; }
+    .login-error.visible { display: block; margin-bottom: 16px; }
+  </style>
 
   <!-- Redirigir si ya hay sesión activa -->
   <script src="js/revendedoras/storage.js"></script>
