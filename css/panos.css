@@ -1,0 +1,596 @@
+/* =========================================================
+   Luna de Plata — Sección Paños
+   ========================================================= */
+
+/* --- Filter chips --- */
+.filter-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 5px var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+}
+
+.filter-chip:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+  background: var(--color-surface-2);
+}
+
+.filter-chip.active {
+  background: var(--color-text-primary);
+  color: #ffffff;
+  border-color: var(--color-text-primary);
+}
+
+/* --- Lista de grupos --- */
+.rev-grupos-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --- Grupo revendedora --- */
+.rev-grupo {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast);
+}
+
+.rev-grupo:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header del grupo */
+.rev-grupo-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.rev-grupo-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-gold-bg);
+  border: 1.5px solid var(--color-gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-gold-dark);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.rev-grupo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rev-grupo-nombre {
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rev-grupo-meta {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin-top: 1px;
+}
+
+.rev-grupo-badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* --- Paños dentro del grupo --- */
+.rev-grupo-panos {
+  padding: var(--space-2) var(--space-3);
+}
+
+/* --- Fila de paño --- */
+.pano-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.pano-fila:hover {
+  background: var(--color-surface-2);
+}
+
+.pano-fila-numero {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.pano-fila-fechas {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 100px;
+}
+
+.pano-fila-lbl {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.pano-fila-val {
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.pano-fila-dias {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* --- Sin paños en grupo --- */
+.grupo-sin-panos {
+  padding: var(--space-4) var(--space-3);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* --- Stats grid para paños (3 columnas) --- */
+.stats-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+/* --- Paño cards expandibles --- */
+.pano-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  margin-bottom: var(--space-2);
+  transition: box-shadow var(--transition-fast);
+}
+
+.pano-card:last-child {
+  margin-bottom: 0;
+}
+
+.pano-card:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.pano-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  user-select: none;
+  background: var(--color-surface-2);
+}
+
+.pano-card-header:hover {
+  background: #eeeeeb;
+}
+
+.pano-card-body {
+  display: none;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.pano-cat-subtotal {
+  margin-top: var(--space-3);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.pano-total-venta {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pano-total-venta strong {
+  color: var(--color-gold-dark);
+}
+
+.pano-card-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pano-card-actions .btn {
+  min-width: 120px;
+}
+
+.pano-card.expanded .pano-card-body {
+  display: block;
+}
+
+.pano-card.expanded .pano-card-chevron {
+  transform: rotate(180deg);
+}
+
+.pano-card-chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.pano-card-numero {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  color: var(--color-text-primary);
+  min-width: 68px;
+  flex-shrink: 0;
+}
+
+.pano-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.pano-card-progress {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
+/* --- Botón agregar artículo en el form --- */
+.btn-cat-add {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+  border: 1.5px dashed var(--color-gold-light);
+  color: var(--color-gold-dark);
+  background: var(--color-gold-bg);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-body);
+}
+.btn-cat-add:hover {
+  background: var(--color-gold-light);
+  border-color: var(--color-gold-dark);
+  border-style: solid;
+}
+
+/* --- Cabecera de grupo de categorías en el form --- */
+.pano-form-grupo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  margin: var(--space-5) 0 var(--space-3);
+  background: var(--color-surface-2);
+  border-left: 3px solid var(--color-gold-dark);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* --- Total de grupo en la vista de paño --- */
+.pano-grupo-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-1) 0 var(--space-4);
+  background: var(--color-surface-2);
+  border-top: 2px solid var(--color-border);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+.gtot-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.gtot-valor {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-gold-dark);
+}
+
+/* --- Badge "preparado por" en card header --- */
+.pano-card-prep {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-2);
+}
+
+/* --- Badge "última modificación" en card header --- */
+.pano-card-mod {
+  font-size: 11.5px;
+  color: var(--color-warning, #b45309);
+  white-space: nowrap;
+  border: 1px solid var(--color-warning-border, #fcd34d);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-2);
+  background: var(--color-warning-bg, #fffbeb);
+}
+
+/* --- Historial de modificaciones dentro de la card --- */
+.pano-historial-mods {
+  margin: var(--space-6) 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pano-historial-mods-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface-2, #f8f8f8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pano-historial-mods-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pano-mod-entrada {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.pano-mod-entrada:last-child { border-bottom: none; }
+
+.pano-mod-cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.pano-mod-fecha {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pano-mod-por {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.pano-mod-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pano-mod-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 12.5px;
+  flex-wrap: wrap;
+}
+
+.mod-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mod-tag-agregado  { background: var(--color-success-bg, #dcfce7); color: var(--color-success, #16a34a); }
+.mod-tag-eliminado { background: var(--color-danger-bg,  #fee2e2); color: var(--color-danger,  #dc2626); }
+.mod-tag-modificado{ background: var(--color-warning-bg, #fffbeb); color: var(--color-warning, #b45309); }
+.mod-tag-campo     { background: var(--color-info-bg,    #eff6ff); color: var(--color-info,    #2563eb); }
+
+.pano-mod-sublista {
+  list-style: none;
+  padding: 0 0 0 var(--space-4);
+  margin: var(--space-1) 0 0;
+  width: 100%;
+}
+
+.pano-mod-subitem {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.pano-mod-subitem::before { content: '· '; }
+
+.pano-mod-sin-cambios {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* --- Adelantos sobre paño activo --- */
+.pano-adelantos-bloque {
+  margin: var(--space-5) 0 var(--space-2);
+  border: 1px solid #d1fae5;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pano-adelantos-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: #065f46;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: var(--space-2) var(--space-4);
+  background: #ecfdf5;
+  border-bottom: 1px solid #d1fae5;
+}
+
+.pano-adelantos-total {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: #065f46;
+  background: #d1fae5;
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+  font-weight: 700;
+}
+
+.pano-adelanto-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid #d1fae5;
+  font-size: 13px;
+}
+.pano-adelanto-fila:last-child { border-bottom: none; }
+
+.pano-adelanto-fecha { color: var(--color-text-muted); min-width: 90px; flex-shrink: 0; font-size: 12px; }
+.pano-adelanto-monto { font-weight: 700; color: #065f46; min-width: 90px; }
+.pano-adelanto-nota  { color: var(--color-text-secondary); flex: 1; font-size: 12.5px; }
+.pano-adelanto-por   { color: var(--color-text-muted); font-size: 12px; }
+
+.pano-adelantos-vacio {
+  padding: var(--space-3) var(--space-4);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* --- Header financiero del paño --- */
+.pano-header-venta {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-gold-dark);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.pano-header-luna {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .stats-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .rev-grupo-header {
+    gap: var(--space-2);
+  }
+
+  .pano-fila {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .pano-fila-dias {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-chips {
+    gap: 3px;
+  }
+
+  .pano-fila-fechas:last-of-type {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .stats-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

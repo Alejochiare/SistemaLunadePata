@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paños — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/revendedoras.css">
+  <link rel="stylesheet" href="../css/panos.css">
+
+  <!-- Guard: redirigir si no hay sesión de admin -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                      { window.location.replace('login.html');      }
+        else if (s.role !== 'admin') { window.location.replace('mi-cuenta.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- =============================================
+       SIDEBAR
+  ============================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">Luna de Plata</div>
+      <div class="sidebar-logo-sub">Sistema de gestión</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+
+      <a href="revendedoras.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Revendedoras
+      </a>
+
+      <a href="panos.html" class="sidebar-nav-item active">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
+        Paños
+      </a>
+
+      <a href="liquidaciones.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Liquidaciones
+      </a>
+
+      <a href="estadisticas.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Estadísticas
+      </a>
+
+      <a href="sucursales.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Sucursales
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">v1.0 · Luna de Plata</div>
+    </div>
+  </aside>
+
+  <!-- =============================================
+       MAIN
+  ============================================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-breadcrumb">
+        <span>Luna de Plata</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Paños</span>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Stats -->
+      <div class="stats-grid-3">
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Activos</div>
+          <div class="stat-card-value" id="stat-activos">0</div>
+          <div class="stat-card-sub">paños en curso</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-warning-bg); color: var(--color-warning)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Por vencer</div>
+          <div class="stat-card-value" id="stat-por-vencer">0</div>
+          <div class="stat-card-sub">quedan menos de 5 días</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-danger-bg); color: var(--color-danger)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Vencidos</div>
+          <div class="stat-card-value" id="stat-vencidos">0</div>
+          <div class="stat-card-sub">superaron los 40 días</div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="section-toolbar">
+        <h2 class="section-title">Paños</h2>
+        <span class="section-count" id="panos-count">0</span>
+        <div class="toolbar-right">
+          <div class="filter-chips" id="filtros-estado">
+            <button class="filter-chip active" data-filtro="todos">Todos</button>
+            <button class="filter-chip" data-filtro="activo">Activos</button>
+            <button class="filter-chip" data-filtro="por-vencer">Por vencer</button>
+            <button class="filter-chip" data-filtro="vencido">Vencidos</button>
+          </div>
+          <div class="search-input-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              class="form-input search-input"
+              id="busqueda-panos"
+              placeholder="Buscar revendedora..."
+            >
+          </div>
+          <button class="btn btn-gold" onclick="window.PanosPage.abrirModalNuevoPano()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo paño
+          </button>
+        </div>
+      </div>
+
+      <!-- Grupos de revendedoras con sus paños (solo activos) -->
+      <div id="panos-grupos">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- =============================================
+           HISTORIAL DE PAÑOS
+      ============================================= -->
+      <div class="historial-section">
+        <div class="section-toolbar" style="margin-top: var(--space-10)">
+          <h2 class="section-title">Historial de paños</h2>
+          <div class="toolbar-right">
+            <select class="form-input" id="hist-filtro-anio" style="width:130px">
+              <option value="">Todos los años</option>
+            </select>
+            <select class="form-input" id="hist-filtro-mes" style="width:150px">
+              <option value="">Todos los meses</option>
+            </select>
+            <div class="search-input-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" class="form-input search-input" id="hist-busqueda" placeholder="Buscar revendedora...">
+            </div>
+          </div>
+        </div>
+        <div id="historial-grupos">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+    </div><!-- /page-body -->
+  </main><!-- /main-content -->
+</div><!-- /app-layout -->
+
+
+<!-- =============================================
+     MODAL — CREAR/EDITAR PAÑO
+============================================= -->
+<div class="pano-panel" id="modal-pano-page">
+  <div class="pano-panel-header">
+    <div class="pano-panel-back">
+      <button type="button" class="btn btn-ghost btn-sm" onclick="window.PanosPage.cerrarModalPano()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Volver
+      </button>
+    </div>
+    <div class="pano-panel-title-wrap">
+      <div class="pano-panel-breadcrumb">Paños › <span id="modal-pano-page-subtitulo"></span></div>
+      <div class="pano-panel-title" id="modal-pano-page-titulo">Nuevo Paño</div>
+    </div>
+    <div class="pano-panel-info">
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Número</span>
+        <span class="pano-panel-info-val gold" id="pano-page-numero-preview">Paño 01</span>
+      </div>
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Entrega</span>
+        <span class="pano-panel-info-val" id="pano-page-fechaEntrega-preview">—</span>
+      </div>
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Vencimiento</span>
+        <span class="pano-panel-info-val" id="pano-page-fechaVencimiento-preview">—</span>
+      </div>
+    </div>
+    <div class="pano-panel-actions">
+      <button type="button" class="btn btn-ghost" onclick="window.PanosPage.cerrarModalPano()">Cancelar</button>
+      <button type="submit" form="form-pano-page" class="btn btn-gold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar Paño
+      </button>
+    </div>
+  </div>
+
+  <form id="form-pano-page" novalidate>
+    <div class="pano-panel-body">
+
+        <!-- Revendedora (obligatorio para nuevo paño) -->
+        <div class="divider-label">Seleccionar revendedora</div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label required" for="pano-page-revendedora">Revendedora</label>
+            <select class="form-input" id="pano-page-revendedora" required>
+              <option value="">— Seleccionar —</option>
+            </select>
+            <span class="form-error" style="display:none"></span>
+          </div>
+        </div>
+
+        <!-- Fecha de entrega -->
+        <div class="divider-label">Fecha de entrega</div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label required" for="pano-page-fechaEntrega">Seleccionar fecha</label>
+            <input type="date" class="form-input" id="pano-page-fechaEntrega" required>
+            <span class="form-error" style="display:none"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pano-page-diasAdicionales">Días adicionales (extensión)</label>
+            <input type="number" class="form-input" id="pano-page-diasAdicionales" min="0" step="1" placeholder="0">
+            <span class="form-hint">Se suman a los 40 días de plazo</span>
+          </div>
+        </div>
+
+        <!-- Preparado por -->
+        <div class="form-grid form-grid-2" style="margin-top: var(--space-4)">
+          <div class="form-group">
+            <label class="form-label" for="pano-page-preparadoPor">Preparado por</label>
+            <input type="text" class="form-input" id="pano-page-preparadoPor" placeholder="Nombre de quien armó el paño">
+          </div>
+        </div>
+
+        <!-- Modificado por (solo visible al editar) -->
+        <div class="form-grid form-grid-2" id="pano-page-modificacion-wrap" style="margin-top: var(--space-4); display:none">
+          <div class="form-group">
+            <label class="form-label required" for="pano-page-modificadoPor">Modificado por</label>
+            <input type="text" class="form-input" id="pano-page-modificadoPor" placeholder="¿Quién está realizando esta modificación?">
+            <span class="form-hint">Requerido al editar un paño existente</span>
+            <span class="form-error" id="pano-page-modificadoPor-error" style="display:none">Indicá quién realiza la modificación</span>
+          </div>
+        </div>
+
+        <!-- Categorías de productos -->
+        <div class="divider-label">Contenido del paño</div>
+
+        <!-- ── GRUPO: JOYAS DE PLATA ── -->
+        <div class="pano-form-grupo">Joyas de Plata</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Anillos</span></div>
+          <div class="cat-items-list" id="pano-page-cat-anillos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('anillos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar anillo
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Aros</span></div>
+          <div class="cat-items-list" id="pano-page-cat-aros"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('aros')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar aro
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Cadenas y Conjuntos</span></div>
+          <div class="cat-items-list" id="pano-page-cat-cadenasConjuntos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('cadenasConjuntos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar cadena / conjunto
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Dijes</span></div>
+          <div class="cat-items-list" id="pano-page-cat-dijes"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('dijes')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar dije
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Pulseras</span></div>
+          <div class="cat-items-list" id="pano-page-cat-pulseras"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('pulseras')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar pulsera
+          </button>
+        </div>
+
+        <!-- ── GRUPO: ACCESORIOS ── -->
+        <div class="pano-form-grupo">Accesorios, Gold Field y Fabricación</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Accesorios, Gold Field y Fabricación</span></div>
+          <div class="cat-items-list" id="pano-page-cat-accesoriosGoldFabricacion"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('accesoriosGoldFabricacion')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar accesorio
+          </button>
+        </div>
+
+        <!-- ── GRUPO: ACERO IONIZADO ── -->
+        <div class="pano-form-grupo">Acero Ionizado</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Anillos Acero</span></div>
+          <div class="cat-items-list" id="pano-page-cat-anillosAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('anillosAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar anillo acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Aros Acero</span></div>
+          <div class="cat-items-list" id="pano-page-cat-arosAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('arosAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar aro acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Cadenas y Conjuntos Acero</span></div>
+          <div class="cat-items-list" id="pano-page-cat-cadenasAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('cadenasAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar cadena / conjunto acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Dijes Acero</span></div>
+          <div class="cat-items-list" id="pano-page-cat-dijesAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('dijesAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar dije acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Pulseras y Tobilleras Acero</span></div>
+          <div class="cat-items-list" id="pano-page-cat-pulserasAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('pulserasAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar pulsera / tobillera acero
+          </button>
+        </div>
+
+        <!-- ── GRUPO: RELOJES ── -->
+        <div class="pano-form-grupo">Relojes, Abridores CH y Oro</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Relojes, Abridores CH</span></div>
+          <div class="cat-items-list" id="pano-page-cat-relojes"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('relojes')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar reloj / abridor
+          </button>
+        </div>
+
+        <!-- ── GRUPO: JOYAS PERSONALIZADAS ── -->
+        <div class="pano-form-grupo">Joyas Personalizadas</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Joyas Personalizadas</span></div>
+          <div class="cat-items-list" id="pano-page-cat-joyasPersonalizadas"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('joyasPersonalizadas')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar joya personalizada
+          </button>
+        </div>
+
+        <!-- ── GRUPO: MARY KAY ── -->
+        <div class="pano-form-grupo">Productos Mary Kay</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Productos Mary Kay</span></div>
+          <div class="cat-items-list" id="pano-page-cat-maryKay"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('maryKay')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar producto Mary Kay
+          </button>
+        </div>
+
+        <!-- ── GRUPO: PRECIO FIJO / ARREGLOS / GRABADOS ── -->
+        <div class="pano-form-grupo">Precio Fijo / Arreglos / Grabados</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Precio Fijo / Arreglos / Grabados</span></div>
+          <div class="cat-items-list" id="pano-page-cat-precioFijoArreglos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.PanosPage.agregarItem('precioFijoArreglos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar precio fijo / arreglo / grabado
+          </button>
+        </div>
+
+      </div><!-- /pano-panel-body -->
+    </form>
+</div><!-- /pano-panel -->
+
+
+<!-- =============================================
+     MODAL — ADELANTO DE PAÑO
+============================================= -->
+<div class="modal-overlay" id="modal-adelanto">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h3 class="modal-title">Registrar adelanto</h3>
+      <button class="modal-close" onclick="document.getElementById('modal-adelanto').classList.remove('open')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="adelanto-pano-id">
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label class="form-label required" for="adelanto-fecha">Fecha</label>
+          <input type="date" class="form-input" id="adelanto-fecha">
+        </div>
+        <div class="form-group">
+          <label class="form-label required" for="adelanto-monto">Monto</label>
+          <input type="text" inputmode="numeric" class="form-input input-miles" id="adelanto-monto" placeholder="$ 0">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:var(--space-3)">
+        <label class="form-label" for="adelanto-nota">Nota (opcional)</label>
+        <input type="text" class="form-input" id="adelanto-nota" placeholder="Ej: transferencia bancaria">
+      </div>
+      <div class="form-group" style="margin-top:var(--space-3)">
+        <label class="form-label required" for="adelanto-por">Registrado por</label>
+        <input type="text" class="form-input" id="adelanto-por" placeholder="¿Quién registra este adelanto?">
+      </div>
+      <div class="form-error" id="adelanto-error" style="display:none;margin-top:var(--space-2)"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-adelanto').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-gold" onclick="window.PanosPage.guardarAdelanto()">Guardar adelanto</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     TOAST CONTAINER
+============================================= -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script>
+  window.UI = {
+    mostrarToast(mensaje, tipo = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${tipo}`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
+            tipo === 'danger'  ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        <span>${mensaje}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/revendedoras/calculos.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/panos/nomenclaturas.js"></script>
+<script src="../js/panos/autocomplete.js"></script>
+<script src="../js/panos/panos-page.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.Auth.inyectarSidebar();
+    window.PanosPage.inicializar();
+    window.FormatoNumero.attachInputMiles(document.getElementById('adelanto-monto'));
+
+    // Si viene de revendedoras con ?nueva=true&rev=<id>, abrir el panel directo
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('nueva') === 'true') {
+      const revId = params.get('rev') || null;
+      // Pequeño delay para que el DOM esté listo
+      setTimeout(() => window.PanosPage.abrirModalNuevoPano(revId), 100);
+      // Limpiar la URL sin recargar
+      history.replaceState({}, '', 'panos.html');
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Sucursal — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/sucursales.css">
+
+  <!-- Guard: redirigir si no hay sesión de sucursal -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                        { window.location.replace('login.html'); }
+        else if (s.role !== 'sucursal'){ window.location.replace('login.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="portal-layout">
+
+  <!-- Header -->
+  <header class="portal-header">
+    <div class="portal-header-brand">Luna de Plata</div>
+    <span class="portal-header-sep">/</span>
+    <div class="portal-header-sucursal" id="portal-nombre-header">Sucursal</div>
+    <div class="portal-header-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-logout">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Body -->
+  <div class="portal-body">
+
+    <!-- Cierre de hoy -->
+    <div class="portal-section-title">
+      Cierre de hoy —
+      <span id="portal-nombre-sucursal"></span>
+    </div>
+    <div id="portal-hoy">
+      <!-- Renderizado por JS -->
+    </div>
+
+    <!-- Formulario inline -->
+    <div id="portal-form-container">
+      <!-- Renderizado por JS cuando se abre el formulario -->
+    </div>
+
+    <!-- Historial -->
+    <div class="portal-section-title" style="margin-top: var(--space-8)">Historial de cierres</div>
+    <div id="portal-historial">
+      <!-- Renderizado por JS -->
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =============================================
+     TOAST CONTAINER
+============================================= -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/sucursales/sucursal-portal-page.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.SucursalPortalPage.inicializar();
+  });
+</script>
+
+</body>
+</html>
+  

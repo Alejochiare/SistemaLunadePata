@@ -1,0 +1,552 @@
+/* =========================================================
+   Luna de Plata — Mi Cuenta (portal de revendedora)
+   ========================================================= */
+
+/* --- Sidebar: usuario y logout --- */
+.sidebar-user {
+  margin-bottom: var(--space-3);
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 11px;
+  color: var(--sidebar-accent);
+  margin-top: 2px;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  border: none;
+  background: none;
+}
+
+.sidebar-logout-btn:hover {
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.06);
+}
+
+/* --- Secciones --- */
+.mc-section {
+  margin-bottom: var(--space-10);
+}
+
+.mc-section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: -0.3px;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* --- Perfil card --- */
+.mc-perfil-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.mc-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-gold-bg);
+  border: 2px solid var(--color-gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--color-gold-dark);
+  flex-shrink: 0;
+}
+
+.mc-info {
+  flex: 1;
+}
+
+.mc-nombre {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.3px;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.mc-localidad,
+.mc-tel {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.mc-stats {
+  display: flex;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.mc-stat {
+  text-align: center;
+}
+
+.mc-stat-val {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.mc-stat-val.danger {
+  color: var(--color-danger);
+}
+
+.mc-stat-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* --- Paños (accordion, reusa estilos de panos.css) --- */
+.mc-panos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mc-empty {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  padding: var(--space-5);
+  text-align: center;
+}
+
+/* --- Saldo actual --- */
+.mc-saldo-actual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+}
+
+.mc-saldo-actual.debe {
+  background: var(--color-danger-bg);
+  border-color: rgba(185,28,28,0.15);
+}
+
+.mc-saldo-actual.favor {
+  background: var(--color-success-bg);
+  border-color: rgba(45,122,79,0.15);
+}
+
+.mc-saldo-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-text-muted);
+}
+
+.mc-saldo-monto {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--color-text-primary);
+}
+
+.mc-saldo-actual.debe  .mc-saldo-monto { color: var(--color-danger); }
+.mc-saldo-actual.favor .mc-saldo-monto { color: var(--color-success); }
+
+/* --- Tabla liquidaciones --- */
+.mc-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.mc-liq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mc-liq-table th {
+  background: var(--color-surface-2);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.mc-liq-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.mc-liq-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mc-liq-table tr:hover td {
+  background: var(--color-surface-2);
+}
+
+.mc-liq-table .col-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.saldo-positivo { color: var(--color-danger);  font-weight: 500; }
+.saldo-negativo { color: var(--color-success); font-weight: 500; }
+
+/* =========================================================
+   Resumen Financiero del Paño (comisión + progreso de tier)
+   ========================================================= */
+
+.mc-resumen-financiero {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Encabezado: badge % + texto */
+.mc-rf-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mc-rf-tier-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-gold-bg);
+  border: 2px solid var(--color-gold-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+}
+
+.mc-rf-tier-pct {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-gold-dark);
+  line-height: 1;
+}
+
+.mc-rf-tier-badge-sub {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-gold-dark);
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+.mc-rf-tier-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.mc-rf-tier-sub {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* Barra de progreso */
+.mc-tier-progreso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mc-tier-next-label {
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.mc-tier-next-label strong {
+  color: var(--color-gold-dark);
+}
+
+.mc-tier-prog-wrap {
+  height: 10px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.mc-tier-prog-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-light), var(--color-gold-dark));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 4px;
+}
+
+.mc-tier-prog-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.mc-tier-prog-next {
+  font-weight: 600;
+  color: var(--color-gold-dark);
+}
+
+.mc-tier-max {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gold-dark);
+}
+
+/* Stats row (días restantes, ganancia, saldo) */
+.mc-rf-stats {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+
+.mc-rf-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 120px;
+}
+
+.mc-rf-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.mc-rf-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.mc-rf-val.danger  { color: var(--color-danger); }
+.mc-rf-val.warn    { color: var(--color-warning); }
+.mc-rf-val.success { color: var(--color-success); }
+
+.mc-rf-sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Botón devolver (desmarcar venta) — solo ícono */
+.btn-devolver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  vertical-align: middle;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.btn-devolver:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+/* Tags de mora/interés en la tabla de movimientos */
+.mc-mora-tag {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-warning);
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.mc-mora-tier {
+  color: var(--color-danger);
+}
+
+/* === Nuevo historial de pagos detallado === */
+
+.mc-saldo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 15px;
+  font-weight: 700;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
+  border: 1px solid transparent;
+}
+.mc-saldo-banner.mc-saldo-debe  { background: var(--color-danger-bg);  color: var(--color-danger);  border-color: rgba(185,28,28,.15); }
+.mc-saldo-banner.mc-saldo-favor { background: var(--color-success-bg); color: var(--color-success); border-color: rgba(45,122,79,.15); }
+
+.mc-saldo-debe  { color: var(--color-danger); }
+.mc-saldo-favor { color: var(--color-success); }
+
+.mc-liqs-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.mc-liq-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.mc-liq-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mc-liq-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 100px;
+}
+
+.mc-liq-col-saldo { margin-left: auto; text-align: right; }
+
+.mc-liq-col-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--color-text-muted);
+}
+
+.mc-liq-col-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.mc-liq-tag-mora {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-warning);
+  margin-top: 2px;
+}
+
+.mc-tabla-pagos-wrap {
+  overflow-x: auto;
+}
+
+.mc-pagos-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mc-pagos-tabla th {
+  background: var(--color-surface-2);
+  padding: var(--space-2) var(--space-4);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.mc-pagos-tabla .col-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.mc-pago-fila td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+.mc-pago-fila:last-child td { border-bottom: none; }
+.mc-pago-fila:hover td { background: var(--color-surface-2); }
+
+.mc-mora-num { color: var(--color-warning); font-weight: 600; }
+
+.mc-pago-tag-ajuste {
+  font-size: 10px;
+  color: var(--color-danger);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.mc-pago-vacio {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 13px;
+}

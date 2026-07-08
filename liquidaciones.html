@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquidaciones — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/revendedoras.css">
+  <link rel="stylesheet" href="../css/liquidaciones.css">
+
+  <!-- Guard: redirigir si no hay sesión de admin -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                      { window.location.replace('login.html');      }
+        else if (s.role !== 'admin') { window.location.replace('mi-cuenta.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- =============================================
+       SIDEBAR
+  ============================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">Luna de Plata</div>
+      <div class="sidebar-logo-sub">Sistema de gestión</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+
+      <a href="revendedoras.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Revendedoras
+      </a>
+
+      <a href="panos.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
+        Paños
+      </a>
+
+      <a href="liquidaciones.html" class="sidebar-nav-item active">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Liquidaciones
+      </a>
+
+      <a href="estadisticas.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Estadísticas
+      </a>
+
+      <a href="sucursales.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Sucursales
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">v1.0 · Luna de Plata</div>
+    </div>
+  </aside>
+
+  <!-- =============================================
+       MAIN
+  ============================================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-breadcrumb">
+        <span>Luna de Plata</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Liquidaciones</span>
+      </div>
+      <div class="header-actions">
+        <div class="notif-wrap">
+          <button class="notif-bell" id="notif-bell" onclick="window.LiqPage.toggleNotifPanel()" title="Notificaciones">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+          </button>
+          <div class="notif-panel" id="notif-panel">
+            <div class="notif-panel-header">Notificaciones</div>
+            <div class="notif-panel-list" id="notif-panel-list"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Stats -->
+      <div class="liq-stats">
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Con saldo</div>
+          <div class="stat-card-value" id="stat-con-saldo">0</div>
+          <div class="stat-card-sub">revendedoras</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-danger-bg); color: var(--color-danger);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">En mora</div>
+          <div class="stat-card-value" id="stat-en-mora">0</div>
+          <div class="stat-card-sub">revendedoras</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Saldo total pendiente</div>
+          <div class="stat-card-value" id="stat-total-saldo" style="font-size: 18px;">$0</div>
+          <div class="stat-card-sub">todas las revendedoras</div>
+        </div>
+      </div>
+
+      <!-- Configuración -->
+      <div class="liq-group" id="config-card" style="padding: var(--space-5); margin-bottom: var(--space-5);">
+        <div style="display:flex; align-items:flex-end; gap: var(--space-4); flex-wrap:wrap;">
+          <div class="form-group" style="margin-bottom:0; max-width:280px;">
+            <label class="form-label" for="config-tasa-interes">Tasa de interés mensual por mora (%)</label>
+            <input type="number" class="form-input" id="config-tasa-interes" min="0" step="0.1" placeholder="15">
+            <span class="form-hint">Se aplica a partir de las 48hs de cerrado el paño</span>
+          </div>
+          <button class="btn btn-gold" onclick="window.LiqPage.guardarConfig()">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Grupos por revendedora -->
+      <div id="liq-grupos"></div>
+
+    </div><!-- /page-body -->
+  </main>
+</div><!-- /app-layout -->
+
+<!-- =============================================
+     MODAL — EDITAR LIQUIDACIÓN (datos del paño)
+============================================= -->
+<div class="modal-overlay" id="modal-liq-edit">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-liq-edit-titulo">Editar Liquidación</h2>
+      </div>
+      <button class="modal-close" onclick="window.LiqPage.cerrarModalLiq()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="form-liq-edit" onsubmit="event.preventDefault(); window.LiqPage.guardarLiquidacion();">
+
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="liq-edit-monto">Monto que debe (a Luna de Plata)</label>
+            <input type="text" inputmode="numeric" class="form-input input-miles" id="liq-edit-monto" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="liq-edit-vta-total">Venta total del paño</label>
+            <input type="text" inputmode="numeric" class="form-input input-miles" id="liq-edit-vta-total" placeholder="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="liq-edit-circulo">Círculo</label>
+          <input type="text" class="form-input" id="liq-edit-circulo" placeholder="Ej: ORO, PLATA...">
+          <span class="form-hint">Escribí lo que corresponda</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="liq-edit-fecha-entrega">Fecha de entrega (paño) — TEST</label>
+          <input type="date" class="form-input" id="liq-edit-fecha-entrega">
+          <span class="form-hint">Temporal, para probar mora/intereses/premio. Se va a quitar después.</span>
+        </div>
+
+        <div id="liq-edit-premio-wrap" style="display:none;">
+          <div class="divider-label">Premio</div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="liq-edit-premio">Descripción del premio</label>
+              <input type="text" class="form-input" id="liq-edit-premio" placeholder="Ej: Collar de plata (opcional)">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="liq-edit-premio-fecha">Fecha del premio</label>
+              <input type="date" class="form-input" id="liq-edit-premio-fecha">
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="window.LiqPage.cerrarModalLiq()">Cancelar</button>
+      <button class="btn btn-gold" onclick="window.LiqPage.guardarLiquidacion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     MODAL — AGREGAR / EDITAR PAGO
+============================================= -->
+<div class="modal-overlay" id="modal-pago">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-pago-titulo">Agregar Pago</h2>
+      </div>
+      <button class="modal-close" onclick="window.LiqPage.cerrarModalPago()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="form-pago" onsubmit="event.preventDefault(); window.LiqPage.guardarPago();">
+
+        <!-- Fecha + Entrega -->
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label required" for="pago-fecha">Fecha del pago</label>
+            <input type="date" class="form-input" id="pago-fecha">
+            <span class="form-hint">Al cambiar la fecha se calculan los intereses automáticamente</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pago-entrega">Entrega</label>
+            <input type="text" inputmode="numeric" class="form-input input-miles" id="pago-entrega" placeholder="0">
+          </div>
+        </div>
+
+        <!-- Varios -->
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="pago-varios-desc">Varios (descripción)</label>
+            <input type="text" class="form-input" id="pago-varios-desc" placeholder="Ej: costo de envío">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pago-varios-monto">Varios (monto)</label>
+            <input type="text" inputmode="numeric" class="form-input input-miles" id="pago-varios-monto" placeholder="0">
+            <span class="form-hint">Positivo suma al saldo (cargo); negativo resta</span>
+          </div>
+        </div>
+
+        <!-- Pago extra + Forma pago -->
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="pago-pago-extra">Pago extra</label>
+            <input type="text" inputmode="numeric" class="form-input input-miles" id="pago-pago-extra" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pago-detalle">Forma de pago</label>
+            <select class="form-input" id="pago-detalle">
+              <option value="">—</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Mixto">Mixto</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Efectivo -->
+        <div class="divider-label">Efectivo</div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-20000">Billetes $20.000</label>
+            <input type="number" class="form-input" id="pago-efectivo-20000" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-10000">Billetes $10.000</label>
+            <input type="number" class="form-input" id="pago-efectivo-10000" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-2000">Billetes $2000</label>
+            <input type="number" class="form-input" id="pago-efectivo-2000" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-1000">Billetes $1000</label>
+            <input type="number" class="form-input" id="pago-efectivo-1000" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-500">Billetes $500</label>
+            <input type="number" class="form-input" id="pago-efectivo-500" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-200">Billetes $200</label>
+            <input type="number" class="form-input" id="pago-efectivo-200" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-100">Billetes $100</label>
+            <input type="number" class="form-input" id="pago-efectivo-100" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-50">Billetes $50</label>
+            <input type="number" class="form-input" id="pago-efectivo-50" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group form-col-full" data-pago-cash style="display:none;">
+            <label class="form-label" for="pago-efectivo-total">Total efectivo</label>
+            <input type="number" class="form-input" id="pago-efectivo-total" readonly placeholder="0">
+            <span class="form-hint">Calculado automáticamente según billetes</span>
+          </div>
+        </div>
+
+        <!-- Intereses -->
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="pago-intereses">Intereses</label>
+            <input type="number" class="form-input" id="pago-intereses" min="0" step="0.01" readonly placeholder="0">
+            <span class="form-hint">Se calcula automático: 15% mensual sobre el saldo pendiente, según los días de demora</span>
+          </div>
+        </div>
+
+        <!-- Preview saldo -->
+        <div class="liq-saldo-preview">
+          <div class="liq-saldo-preview-row">
+            <span>Saldo anterior</span>
+            <span id="preview-saldo-previo">$0</span>
+          </div>
+          <hr class="liq-saldo-preview-divider">
+          <div class="liq-saldo-preview-row">
+            <span>Nuevo saldo</span>
+            <strong><span class="liq-saldo-nuevo" id="preview-saldo-nuevo">$0</span></strong>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="window.LiqPage.cerrarModalPago()">Cancelar</button>
+      <button class="btn btn-gold" onclick="window.LiqPage.guardarPago()">Guardar Pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;"></div>
+
+<script>
+  window.UI = {
+    mostrarToast(mensaje, tipo = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${tipo}`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
+            tipo === 'danger'  ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        <span>${mensaje}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/revendedoras/calculos.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/liquidaciones/liquidaciones-page.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.Auth.inyectarSidebar();
+  });
+</script>
+
+<script>
+  // LiqPage se define en liquidaciones-page.js (ya expuesto como window.LiqPage)
+</script>
+
+</body>
+</html>

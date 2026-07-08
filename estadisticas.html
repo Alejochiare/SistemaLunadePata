@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadísticas — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/estadisticas.css">
+
+  <!-- Guard: redirigir si no hay sesión de admin -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                      { window.location.replace('login.html');      }
+        else if (s.role !== 'admin') { window.location.replace('mi-cuenta.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- =============================================
+       SIDEBAR
+  ============================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">Luna de Plata</div>
+      <div class="sidebar-logo-sub">Sistema de gestión</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+
+      <a href="revendedoras.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Revendedoras
+      </a>
+
+      <a href="panos.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
+        Paños
+      </a>
+
+      <a href="liquidaciones.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Liquidaciones
+      </a>
+ <a href="estadisticas.html" class="sidebar-nav-item active">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6"  y1="20" x2="6"  y2="14"/>
+        </svg>
+        Estadísticas
+      </a>
+
+
+      <a href="sucursales.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Sucursales
+      </a>
+
+     
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">v1.0 · Luna de Plata</div>
+    </div>
+  </aside>
+
+  <!-- =============================================
+       MAIN
+  ============================================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-breadcrumb">
+        <span>Luna de Plata</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Estadísticas</span>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Filtros -->
+      <div class="est-filtros">
+        <span class="est-filtros-label">Filtrar por:</span>
+        <select class="form-input" id="est-filtro-anio">
+          <option value="">Todos los años</option>
+        </select>
+        <select class="form-input" id="est-filtro-mes">
+          <option value="">Todos los meses</option>
+        </select>
+      </div>
+
+      <!-- KPI cards -->
+      <div class="est-kpis" id="est-kpis">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- Ranking de revendedoras -->
+      <div class="est-section" id="est-ranking">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- Lo más vendido por categoría -->
+      <div class="est-section" id="est-categorias">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- Evolución mensual -->
+      <div class="est-section" id="est-evolucion">
+        <!-- Renderizado por JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main><!-- /main-content -->
+</div><!-- /app-layout -->
+
+
+<!-- =============================================
+     TOAST CONTAINER
+============================================= -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script>
+  window.UI = {
+    mostrarToast(mensaje, tipo = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${tipo}`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
+            tipo === 'danger'  ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        <span>${mensaje}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/revendedoras/calculos.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/estadisticas/estadisticas-page.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.Auth.inyectarSidebar();
+    window.EstadisticasPage.inicializar();
+  });
+</script>
+
+</body>
+</html>

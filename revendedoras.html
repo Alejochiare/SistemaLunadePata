@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revendedoras — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/revendedoras.css">
+  <link rel="stylesheet" href="../css/panos.css">
+
+  <!-- Guard: redirigir si no hay sesión de admin -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                      { window.location.replace('login.html');      }
+        else if (s.role !== 'admin') { window.location.replace('mi-cuenta.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- =============================================
+       SIDEBAR
+  ============================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">Luna de Plata</div>
+      <div class="sidebar-logo-sub">Sistema de gestión</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+
+      <a href="revendedoras.html" class="sidebar-nav-item active">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Revendedoras
+      </a>
+
+      <a href="panos.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
+        Paños
+      </a>
+
+      <a href="liquidaciones.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Liquidaciones
+      </a>
+
+      <a href="estadisticas.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Estadísticas
+      </a>
+
+      <a href="sucursales.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Sucursales
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">v1.0 · Luna de Plata</div>
+    </div>
+  </aside>
+
+  <!-- =============================================
+       MAIN
+  ============================================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-breadcrumb">
+        <span>Luna de Plata</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Revendedoras</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-gold" id="btn-nueva-revendedora">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva Revendedora
+        </button>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Revendedoras</div>
+          <div class="stat-card-value" id="stat-revendedoras">0</div>
+          <div class="stat-card-sub">activas</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-dark">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 9h6M9 12h6M9 15h4"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Total paños</div>
+          <div class="stat-card-value" id="stat-panos">0</div>
+          <div class="stat-card-sub">asignados</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-danger-bg); color: var(--color-danger)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Vencidos</div>
+          <div class="stat-card-value" id="stat-vencidos">0</div>
+          <div class="stat-card-sub">paños por vencer</div>
+        </div>
+      </div>
+
+      <!-- Toolbar de revendedoras -->
+      <div class="section-toolbar">
+        <h2 class="section-title">Revendedoras</h2>
+        <span class="section-count" id="revendedoras-count">0</span>
+        <div class="toolbar-right">
+          <div class="search-input-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              class="form-input search-input"
+              id="busqueda-revendedora"
+              placeholder="Buscar por nombre, localidad..."
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de cards -->
+      <div class="revendedoras-grid" id="revendedoras-grid">
+        <!-- Renderizado por JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main><!-- /main-content -->
+</div><!-- /app-layout -->
+
+
+<!-- =============================================
+     MODAL — NUEVA / EDITAR REVENDEDORA
+============================================= -->
+<div class="modal-overlay" id="modal-revendedora">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-rev-titulo">Nueva Revendedora</h2>
+        <p class="modal-subtitle">Completá los datos de la revendedora</p>
+      </div>
+      <button class="modal-close" id="btn-cerrar-modal-rev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="form-revendedora" novalidate>
+      <div class="modal-body">
+
+        <div class="divider-label">Datos personales</div>
+
+        <div class="form-grid">
+          <div class="form-group form-col-full">
+            <label class="form-label required" for="rev-nombre">Nombre completo</label>
+            <input type="text" class="form-input" id="rev-nombre" placeholder="Ej: María García" autocomplete="off">
+            <span class="form-error" style="display:none"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rev-fechaNacimiento">Fecha de nacimiento</label>
+            <input type="date" class="form-input" id="rev-fechaNacimiento">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rev-dni">DNI</label>
+            <input type="text" class="form-input" id="rev-dni" placeholder="Ej: 30.123.456">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required" for="rev-telefono">Teléfono</label>
+            <input type="tel" class="form-input" id="rev-telefono" placeholder="Ej: 351 123-4567">
+            <span class="form-error" style="display:none"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rev-mail">Email</label>
+            <input type="email" class="form-input" id="rev-mail" placeholder="mail@ejemplo.com">
+            <span class="form-error" style="display:none"></span>
+          </div>
+        </div>
+
+        <div class="divider-label">Dirección</div>
+
+        <div class="form-grid">
+          <div class="form-group form-col-full">
+            <label class="form-label" for="rev-direccion">Dirección</label>
+            <input type="text" class="form-input" id="rev-direccion" placeholder="Ej: Av. Colón 1234">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rev-localidad">Localidad</label>
+            <input type="text" class="form-input" id="rev-localidad" placeholder="Ej: Córdoba">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required" for="rev-fechaInicio">Fecha de inicio</label>
+            <input type="date" class="form-input" id="rev-fechaInicio">
+            <span class="form-error" style="display:none"></span>
+          </div>
+        </div>
+
+        <div class="divider-label">Acceso al sistema</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="rev-username">Usuario</label>
+            <input type="text" class="form-input" id="rev-username" placeholder="Ej: maria.garcia" autocomplete="off">
+            <span class="form-hint">Dejar vacío para no asignar acceso</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rev-password">Contraseña</label>
+            <input type="password" class="form-input" id="rev-password" placeholder="Nueva contraseña" autocomplete="new-password">
+            <span class="form-hint">Al editar, dejar vacío para mantener la actual</span>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="btn-cancelar-rev">Cancelar</button>
+        <button type="submit" class="btn btn-gold">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+
+<!-- =============================================
+     MODAL — ASIGNAR / EDITAR PAÑO
+============================================= -->
+<div class="pano-panel" id="modal-pano">
+  <div class="pano-panel-header">
+    <div class="pano-panel-back">
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-cerrar-modal-pano">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Volver
+      </button>
+    </div>
+    <div class="pano-panel-title-wrap">
+      <div class="pano-panel-breadcrumb">Revendedoras › <span id="modal-pano-subtitulo"></span></div>
+      <div class="pano-panel-title" id="modal-pano-titulo">Asignar Paño</div>
+    </div>
+    <div class="pano-panel-info">
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Número</span>
+        <span class="pano-panel-info-val gold" id="pano-numero-preview">Paño 01</span>
+      </div>
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Entrega</span>
+        <span class="pano-panel-info-val" id="pano-fechaEntrega-preview">—</span>
+      </div>
+      <div class="pano-panel-info-item">
+        <span class="pano-panel-info-lbl">Vencimiento</span>
+        <span class="pano-panel-info-val" id="pano-fechaVencimiento-preview">—</span>
+      </div>
+    </div>
+    <div class="pano-panel-actions">
+      <button type="button" class="btn btn-ghost" id="btn-cancelar-pano">Cancelar</button>
+      <button type="submit" form="form-pano" class="btn btn-gold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar Paño
+      </button>
+    </div>
+  </div>
+
+  <form id="form-pano" novalidate>
+    <div class="pano-panel-body">
+
+        <!-- Fecha de entrega -->
+        <div class="divider-label">Fecha de entrega</div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label required" for="pano-fechaEntrega">Seleccionar fecha</label>
+            <input type="date" class="form-input" id="pano-fechaEntrega">
+            <span class="form-error" style="display:none"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pano-diasAdicionales">Días adicionales (extensión)</label>
+            <input type="number" class="form-input" id="pano-diasAdicionales" min="0" step="1" placeholder="0">
+            <span class="form-hint">Se suman a los 40 días de plazo</span>
+          </div>
+        </div>
+
+        <!-- Preparado por -->
+        <div class="form-grid form-grid-2" style="margin-top: var(--space-4)">
+          <div class="form-group">
+            <label class="form-label" for="pano-preparadoPor">Preparado por</label>
+            <input type="text" class="form-input" id="pano-preparadoPor" placeholder="Nombre de quien armó el paño">
+          </div>
+        </div>
+
+        <!-- Categorías de productos -->
+        <div class="divider-label">Contenido del paño</div>
+
+        <!-- ── GRUPO: JOYAS DE PLATA ── -->
+        <div class="pano-form-grupo">Joyas de Plata</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Anillos</span></div>
+          <div class="cat-items-list" id="pano-cat-anillos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('anillos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar anillo
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Aros</span></div>
+          <div class="cat-items-list" id="pano-cat-aros"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('aros')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar aro
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Cadenas y Conjuntos</span></div>
+          <div class="cat-items-list" id="pano-cat-cadenasConjuntos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('cadenasConjuntos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar cadena / conjunto
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Dijes</span></div>
+          <div class="cat-items-list" id="pano-cat-dijes"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('dijes')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar dije
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Pulseras</span></div>
+          <div class="cat-items-list" id="pano-cat-pulseras"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('pulseras')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar pulsera
+          </button>
+        </div>
+
+        <!-- ── GRUPO: ACCESORIOS ── -->
+        <div class="pano-form-grupo">Accesorios, Gold Field y Fabricación</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Accesorios, Gold Field y Fabricación</span></div>
+          <div class="cat-items-list" id="pano-cat-accesoriosGoldFabricacion"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('accesoriosGoldFabricacion')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar accesorio
+          </button>
+        </div>
+
+        <!-- ── GRUPO: ACERO IONIZADO ── -->
+        <div class="pano-form-grupo">Acero Ionizado</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Anillos Acero</span></div>
+          <div class="cat-items-list" id="pano-cat-anillosAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('anillosAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar anillo acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Aros Acero</span></div>
+          <div class="cat-items-list" id="pano-cat-arosAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('arosAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar aro acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Cadenas y Conjuntos Acero</span></div>
+          <div class="cat-items-list" id="pano-cat-cadenasAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('cadenasAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar cadena / conjunto acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Dijes Acero</span></div>
+          <div class="cat-items-list" id="pano-cat-dijesAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('dijesAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar dije acero
+          </button>
+        </div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Pulseras y Tobilleras Acero</span></div>
+          <div class="cat-items-list" id="pano-cat-pulserasAcero"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('pulserasAcero')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar pulsera / tobillera acero
+          </button>
+        </div>
+
+        <!-- ── GRUPO: RELOJES ── -->
+        <div class="pano-form-grupo">Relojes, Abridores CH y Oro</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Relojes, Abridores CH</span></div>
+          <div class="cat-items-list" id="pano-cat-relojes"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('relojes')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar reloj / abridor
+          </button>
+        </div>
+
+        <!-- ── GRUPO: JOYAS PERSONALIZADAS ── -->
+        <div class="pano-form-grupo">Joyas Personalizadas</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Joyas Personalizadas</span></div>
+          <div class="cat-items-list" id="pano-cat-joyasPersonalizadas"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('joyasPersonalizadas')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar joya personalizada
+          </button>
+        </div>
+
+        <!-- ── GRUPO: MARY KAY ── -->
+        <div class="pano-form-grupo">Productos Mary Kay</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Productos Mary Kay</span></div>
+          <div class="cat-items-list" id="pano-cat-maryKay"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('maryKay')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar producto Mary Kay
+          </button>
+        </div>
+
+        <!-- ── GRUPO: PRECIO FIJO / ARREGLOS / GRABADOS ── -->
+        <div class="pano-form-grupo">Precio Fijo / Arreglos / Grabados</div>
+
+        <div class="form-group form-col-full">
+          <div class="cat-section-header"><span class="cat-section-label">Precio Fijo / Arreglos / Grabados</span></div>
+          <div class="cat-items-list" id="pano-cat-precioFijoArreglos"></div>
+          <button type="button" class="btn-cat-add" onclick="window.Formularios.agregarItem('precioFijoArreglos')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar precio fijo / arreglo / grabado
+          </button>
+        </div>
+
+      </div><!-- /pano-panel-body -->
+    </form>
+</div><!-- /pano-panel -->
+
+
+<!-- =============================================
+     MODAL — VER REVENDEDORA
+============================================= -->
+<div class="modal-overlay" id="modal-ver-revendedora">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="revendedora-detail-header" style="margin-bottom:0; padding-bottom:0; border-bottom:none">
+        <div class="revendedora-detail-avatar" id="ver-avatar">?</div>
+        <div class="revendedora-detail-info">
+          <h2 id="ver-nombre">—</h2>
+          <p id="ver-localidad">—</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+        <button class="modal-close" id="btn-cerrar-ver">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div style="display:flex; gap:6px; margin-top:4px">
+          <button class="btn btn-ghost btn-sm" id="btn-imprimir-datos-rev">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir datos
+          </button>
+          <button class="btn btn-ghost btn-sm" id="btn-editar-revendedora">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+          <button class="btn btn-danger-ghost btn-sm" id="btn-eliminar-revendedora">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="tab-info">Información</button>
+        <button class="modal-tab" data-tab="tab-panos">Paños</button>
+      </div>
+
+      <!-- Tab: Info -->
+      <div class="tab-panel active" id="tab-info">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-item-label">Nombre completo</span>
+            <span class="info-item-value" id="ver-info-nombre">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">DNI</span>
+            <span class="info-item-value" id="ver-info-dni">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Fecha de nacimiento</span>
+            <span class="info-item-value" id="ver-info-nacimiento">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Teléfono</span>
+            <span class="info-item-value" id="ver-info-telefono">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Email</span>
+            <span class="info-item-value" id="ver-info-mail">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Fecha de inicio</span>
+            <span class="info-item-value" id="ver-info-inicio">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Dirección</span>
+            <span class="info-item-value" id="ver-info-direccion">—</span>
+          </div>
+          <div class="info-item">
+            <span class="info-item-label">Localidad</span>
+            <span class="info-item-value" id="ver-info-localidad">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Paños -->
+      <div class="tab-panel" id="tab-panos">
+        <div style="display:flex; justify-content:flex-end; margin-bottom: 16px">
+          <button class="btn btn-gold btn-sm" id="btn-asignar-pano-modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo Paño
+          </button>
+        </div>
+        <div class="panos-list" id="panos-lista">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+
+<!-- =============================================
+     TOAST CONTAINER
+============================================= -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script>
+  /**
+   * UI helpers globales (toast, etc.)
+   * Expuesto como window.UI
+   */
+  window.UI = {
+    mostrarToast(mensaje, tipo = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${tipo}`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
+            tipo === 'danger'  ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+            tipo === 'gold'    ? '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        <span>${mensaje}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/revendedoras/calculos.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/panos/nomenclaturas.js"></script>
+<script src="../js/panos/autocomplete.js"></script>
+<script src="../js/revendedoras/formularios.js"></script>
+<script src="../js/revendedoras/panos.js"></script>
+<script src="../js/revendedoras/revendedoras.js"></script>
+<script src="../js/revendedoras/notificaciones.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.Auth.inyectarSidebar();
+    window.Revendedoras.inicializar();
+    window.Notificaciones.inicializar();
+  });
+</script>
+
+</body>
+</html>

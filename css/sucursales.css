@@ -1,0 +1,764 @@
+/* =========================================================
+   Luna de Plata — Sección Sucursales
+   ========================================================= */
+
+/* --- Tabs de sucursal --- */
+.sucursal-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0;
+}
+
+.sucursal-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  background: none;
+}
+
+.sucursal-tab:hover {
+  color: var(--color-text-secondary);
+}
+
+.sucursal-tab.active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-gold);
+}
+
+.sucursal-tab-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.sucursal-tab.active .sucursal-tab-badge {
+  background: var(--color-gold-bg);
+  color: var(--color-gold-dark);
+}
+
+/* --- Stats 4 columnas --- */
+.stats-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+/* --- Lista de cierres --- */
+.cierres-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* --- Grupo de fecha --- */
+.cierre-fecha-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cierre-fecha-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: var(--space-2) 0 var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-1);
+}
+
+/* --- Card de cierre --- */
+.cierre-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast);
+}
+
+.cierre-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.cierre-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  user-select: none;
+  background: var(--color-surface-2);
+}
+
+.cierre-card-header:hover {
+  background: #eeeeeb;
+}
+
+.cierre-sucursal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cierre-sucursal-dot.balnearia { background: #4f86c6; }
+.cierre-sucursal-dot.miramar   { background: #4fc68a; }
+.cierre-sucursal-dot.la-para   { background: #c8a96e; }
+
+.cierre-sucursal-nombre {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  min-width: 90px;
+}
+
+.cierre-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.cierre-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cierre-meta-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.cierre-meta-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cierre-meta-val.gold { color: var(--color-gold-dark); }
+.cierre-meta-val.success { color: var(--color-success); }
+
+.cierre-total-venta {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--color-gold-dark);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.cierre-chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.cierre-card.expanded .cierre-chevron {
+  transform: rotate(180deg);
+}
+
+.cierre-card-body {
+  display: none;
+  padding: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.cierre-card.expanded .cierre-card-body {
+  display: block;
+}
+
+/* --- Detalle del cierre --- */
+.cierre-detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.cierre-detalle-bloque {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.cierre-detalle-titulo {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.cierre-detalle-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.cierre-detalle-fila-lbl {
+  color: var(--color-text-secondary);
+}
+
+.cierre-detalle-fila-val {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cierre-detalle-fila-val.gold { color: var(--color-gold-dark); }
+.cierre-detalle-fila-val.danger { color: var(--color-danger); }
+.cierre-detalle-fila-val.success { color: var(--color-success); }
+
+.cierre-detalle-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) 0 0;
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cierre-detalle-total strong {
+  color: var(--color-gold-dark);
+}
+
+/* --- Gastos lista en detalle --- */
+.cierre-gastos-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cierre-gasto-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+  padding: 2px 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.cierre-gasto-item:last-child {
+  border-bottom: none;
+}
+
+.cierre-gasto-monto {
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+/* --- Observaciones --- */
+.cierre-obs {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-gold-bg);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-gold-light);
+  margin-top: var(--space-3);
+}
+
+/* --- Acciones del cierre --- */
+.cierre-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-4);
+}
+
+/* --- Gastos en modal --- */
+.gastos-lista-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.gasto-fila {
+  display: grid;
+  grid-template-columns: 1fr 140px 32px;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.gasto-fila .form-input {
+  height: 34px;
+  padding: 4px var(--space-3);
+  font-size: 13px;
+}
+
+/* --- Preview resumen modal --- */
+.cierre-preview {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.cierre-preview-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.cierre-preview-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.cierre-preview-fila-lbl { color: var(--color-text-secondary); }
+
+.cierre-preview-fila-val {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cierre-preview-fila-val.danger { color: var(--color-danger); }
+.cierre-preview-fila-val.gold { color: var(--color-gold-dark); }
+.cierre-preview-fila-val.success { color: var(--color-success); }
+
+.cierre-preview-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-2) 0;
+}
+
+.cierre-preview-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-2);
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.cierre-preview-total strong { color: var(--color-gold-dark); }
+
+/* --- Fecha filtro --- */
+.fecha-filtro-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fecha-filtro-wrap .form-input {
+  height: 34px;
+  font-size: 13px;
+  width: 160px;
+  padding: 4px var(--space-3);
+}
+
+/* --- Responsive --- */
+@media (max-width: 1100px) {
+  .stats-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cierre-detalle-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-grid-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cierre-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+  .sucursal-tabs {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .gasto-fila {
+    grid-template-columns: 1fr 110px 32px;
+  }
+}
+
+/* =========================================================
+   GESTIÓN DE SUCURSALES — Cards
+   ========================================================= */
+
+.sucursales-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+}
+
+.suc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.suc-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.suc-nombre {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+
+.suc-card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.suc-info-row {
+  display: flex;
+  gap: var(--space-3);
+  font-size: 13px;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+
+.suc-info-row:last-child {
+  border-bottom: none;
+}
+
+.suc-info-row > span:first-child {
+  color: var(--color-text-muted);
+  min-width: 90px;
+}
+
+.suc-card-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.suc-password-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-show-pwd {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.btn-show-pwd:hover {
+  color: var(--color-text-primary);
+}
+
+/* =========================================================
+   PORTAL DE SUCURSAL
+   ========================================================= */
+
+.portal-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.portal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+}
+
+.portal-header-brand {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--color-gold-dark);
+  font-weight: 600;
+}
+
+.portal-header-sep {
+  color: var(--color-border);
+  font-size: 18px;
+}
+
+.portal-header-sucursal {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.portal-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.portal-body {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+  width: 100%;
+}
+
+.portal-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-gold-light);
+  margin-bottom: var(--space-5);
+}
+
+.portal-hoy-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-xs);
+}
+
+.portal-hoy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.portal-hoy-fecha {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.portal-hoy-total {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--color-gold-dark);
+  margin-bottom: var(--space-3);
+}
+
+.portal-hoy-meta {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.portal-hoy-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.portal-hoy-meta-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.portal-hoy-meta-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.portal-form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.portal-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-4);
+}
+
+.portal-historial-mes {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+}
+
+.portal-mes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.portal-mes-header:hover {
+  background: var(--color-surface-2);
+}
+
+.portal-mes-body {
+  display: none;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.portal-historial-mes.expanded .portal-mes-body {
+  display: block;
+}
+
+.portal-historial-mes.expanded .portal-mes-chevron {
+  transform: rotate(180deg);
+}
+
+.portal-mes-chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.portal-cierre-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.portal-cierre-row:last-child {
+  border-bottom: none;
+}
+
+.portal-cierre-row:hover {
+  background: var(--color-surface-2);
+}
+
+.portal-cierre-fecha {
+  min-width: 130px;
+  color: var(--color-text-secondary);
+}
+
+.portal-cierre-montos {
+  display: flex;
+  gap: var(--space-4);
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.portal-cierre-monto-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.portal-cierre-monto-lbl {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.portal-cierre-monto-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.portal-cierre-total {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--color-gold-dark);
+  white-space: nowrap;
+}
+
+.portal-cierre-detalle {
+  display: none;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.portal-cierre-row.expanded + .portal-cierre-detalle {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .portal-header {
+    padding: var(--space-3) var(--space-4);
+  }
+  .portal-body {
+    padding: var(--space-5) var(--space-4);
+  }
+  .portal-hoy-meta {
+    gap: var(--space-3);
+  }
+}

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sucursales — Luna de Plata</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/revendedoras.css">
+  <link rel="stylesheet" href="../css/sucursales.css">
+
+  <!-- Guard: redirigir si no hay sesión de admin -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ldp_session'));
+        if (!s)                      { window.location.replace('login.html');      }
+        else if (s.role !== 'admin') { window.location.replace('mi-cuenta.html'); }
+      } catch (e) { window.location.replace('login.html'); }
+    })();
+  </script>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- =============================================
+       SIDEBAR
+  ============================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">Luna de Plata</div>
+      <div class="sidebar-logo-sub">Sistema de gestión</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+
+      <a href="revendedoras.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Revendedoras
+      </a>
+
+      <a href="panos.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
+        Paños
+      </a>
+
+      <a href="liquidaciones.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Liquidaciones
+      </a>
+
+      <a href="estadisticas.html" class="sidebar-nav-item">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Estadísticas
+      </a>
+
+      <a href="sucursales.html" class="sidebar-nav-item active">
+        <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Sucursales
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">v1.0 · Luna de Plata</div>
+    </div>
+  </aside>
+
+  <!-- =============================================
+       MAIN
+  ============================================= -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-breadcrumb">
+        <span>Luna de Plata</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Sucursales</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-gold" onclick="window.SucursalesPage.abrirModalNuevo()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo cierre
+        </button>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Stats -->
+      <div class="stats-grid-4">
+
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-gold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Ventas hoy</div>
+          <div class="stat-card-value" id="stat-ventas-hoy">$0</div>
+          <div class="stat-card-sub">todas las sucursales</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-success-bg); color: var(--color-success)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Ventas del mes</div>
+          <div class="stat-card-value" id="stat-ventas-mes">$0</div>
+          <div class="stat-card-sub">acumulado mensual</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: var(--color-warning-bg); color: var(--color-warning)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Sin cierre hoy</div>
+          <div class="stat-card-value" id="stat-pendientes">0</div>
+          <div class="stat-card-sub">sucursales pendientes</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-dark">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="stat-card-label">Mejor sucursal hoy</div>
+          <div class="stat-card-value" style="font-size: 20px;" id="stat-top-sucursal">—</div>
+          <div class="stat-card-sub">mayor volumen de ventas</div>
+        </div>
+
+      </div>
+
+      <!-- Gestión de Sucursales -->
+      <div class="section-toolbar" style="margin-bottom: var(--space-4)">
+        <h2 class="section-title">Sucursales</h2>
+        <div class="toolbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="window.SucursalesPage.abrirModalSucursal()">
+            + Nueva sucursal
+          </button>
+        </div>
+      </div>
+      <div id="sucursales-lista" class="sucursales-grid">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <div style="margin-top: var(--space-8)"></div>
+
+      <!-- Tabs de sucursal -->
+      <div class="sucursal-tabs" id="sucursal-tabs">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- Toolbar -->
+      <div class="section-toolbar">
+        <h2 class="section-title">Cierres de caja</h2>
+        <span class="section-count" id="cierres-count">0</span>
+        <div class="toolbar-right">
+          <div class="fecha-filtro-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted); flex-shrink:0">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <input type="date" class="form-input" id="filtro-fecha" title="Filtrar por fecha">
+            <button class="btn btn-ghost btn-sm" id="btn-limpiar-fecha" title="Limpiar filtro">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <button class="btn btn-gold" onclick="window.SucursalesPage.abrirModalNuevo()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo cierre
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de cierres -->
+      <div id="cierres-lista">
+        <!-- Renderizado por JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main><!-- /main-content -->
+</div><!-- /app-layout -->
+
+
+<!-- =============================================
+     MODAL — NUEVO / EDITAR CIERRE DE CAJA
+============================================= -->
+<div class="modal-overlay" id="modal-cierre">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-cierre-titulo">Nuevo cierre de caja</h2>
+        <p class="modal-subtitle">Registrá las ventas y gastos del día por sucursal</p>
+      </div>
+      <button class="modal-close" onclick="window.SucursalesPage.cerrarModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="form-cierre" novalidate>
+      <div class="modal-body">
+
+        <!-- Sucursal y fecha -->
+        <div class="divider-label">Datos del cierre</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required" for="cierre-sucursal">Sucursal</label>
+            <select class="form-select" id="cierre-sucursal" required>
+              <option value="">— Seleccionar —</option>
+            </select>
+            <span class="form-error" id="error-sucursal" style="display:none"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="cierre-fecha">Fecha</label>
+            <input type="date" class="form-input" id="cierre-fecha" required>
+            <span class="form-error" id="error-fecha" style="display:none"></span>
+          </div>
+        </div>
+
+        <!-- Fondo de inicio -->
+        <div class="divider-label">Fondo inicial de caja</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="cierre-fondo-inicio">Fondo de inicio (efectivo)</label>
+            <div class="input-currency">
+              <span class="input-currency-symbol">$</span>
+              <input type="text" inputmode="numeric" class="form-input input-miles" id="cierre-fondo-inicio" placeholder="0">
+            </div>
+            <span class="form-hint">Dinero que había en caja al abrir</span>
+          </div>
+        </div>
+
+        <!-- Ventas por método de pago -->
+        <div class="divider-label">Ventas del día por método de pago</div>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="cierre-ventas-efectivo">Efectivo</label>
+            <div class="input-currency">
+              <span class="input-currency-symbol">$</span>
+              <input type="text" inputmode="numeric" class="form-input input-miles" id="cierre-ventas-efectivo" placeholder="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cierre-ventas-transfer">Transferencia</label>
+            <div class="input-currency">
+              <span class="input-currency-symbol">$</span>
+              <input type="text" inputmode="numeric" class="form-input input-miles" id="cierre-ventas-transfer" placeholder="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cierre-ventas-tarjeta">Tarjeta</label>
+            <div class="input-currency">
+              <span class="input-currency-symbol">$</span>
+              <input type="text" inputmode="numeric" class="form-input input-miles" id="cierre-ventas-tarjeta" placeholder="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Gastos del día -->
+        <div class="divider-label">
+          Gastos del día
+          <button type="button" class="btn btn-ghost btn-sm" onclick="window.SucursalesPage.agregarGasto()" style="margin-left: auto;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar gasto
+          </button>
+        </div>
+        <div id="gastos-lista-modal" class="gastos-lista-modal">
+          <!-- Filas de gastos renderizadas por JS -->
+        </div>
+        <p style="font-size:12.5px; color: var(--color-text-muted); margin-top: var(--space-2);">Retiros de caja, insumos, etc.</p>
+
+        <!-- Observaciones -->
+        <div class="divider-label">Observaciones</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="cierre-observaciones" placeholder="Notas del día, incidencias, diferencias de caja..." rows="2"></textarea>
+        </div>
+
+        <!-- Preview resumen -->
+        <div class="cierre-preview">
+          <div class="cierre-preview-titulo">Resumen del cierre</div>
+
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl">Efectivo</span>
+            <span class="cierre-preview-fila-val gold" id="preview-ventas-efectivo">$0</span>
+          </div>
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl">Transferencia</span>
+            <span class="cierre-preview-fila-val gold" id="preview-ventas-transfer">$0</span>
+          </div>
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl">Tarjeta</span>
+            <span class="cierre-preview-fila-val gold" id="preview-ventas-tarjeta">$0</span>
+          </div>
+          <div class="cierre-preview-divider"></div>
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl" style="font-weight:600">Total ventas</span>
+            <span class="cierre-preview-fila-val gold" id="preview-total-ventas" style="font-size:15px">$0</span>
+          </div>
+          <div class="cierre-preview-divider"></div>
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl">Fondo inicial</span>
+            <span class="cierre-preview-fila-val" id="preview-fondo">$0</span>
+          </div>
+          <div class="cierre-preview-fila">
+            <span class="cierre-preview-fila-lbl">Gastos del día</span>
+            <span class="cierre-preview-fila-val danger" id="preview-total-gastos">- $0</span>
+          </div>
+          <div class="cierre-preview-divider"></div>
+          <div class="cierre-preview-total">
+            <span>Caja de efectivo final</span>
+            <strong id="preview-caja-final">$0</strong>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="window.SucursalesPage.cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-gold">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Guardar cierre
+        </button>
+      </div>
+    </form>
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+
+<!-- =============================================
+     MODAL — NUEVA / EDITAR SUCURSAL
+============================================= -->
+<div class="modal-overlay" id="modal-sucursal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-sucursal-titulo">Nueva sucursal</h2>
+        <p class="modal-subtitle">Datos de la sucursal y credenciales de acceso</p>
+      </div>
+      <button class="modal-close" onclick="window.SucursalesPage.cerrarModalSucursal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-sucursal" novalidate>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required">Nombre de la sucursal</label>
+            <input type="text" class="form-input" id="suc-nombre" placeholder="Ej: Balnearia" required>
+            <span class="form-error" id="error-suc-nombre" style="display:none"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Encargado/a</label>
+            <input type="text" class="form-input" id="suc-encargado" placeholder="Nombre del encargado">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dirección</label>
+          <input type="text" class="form-input" id="suc-direccion" placeholder="Calle, número, localidad">
+        </div>
+        <div class="divider-label">Credenciales de acceso</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label required">Usuario</label>
+            <input type="text" class="form-input" id="suc-usuario" placeholder="Ej: balnearia" autocomplete="off" required>
+            <span class="form-hint">Con esto la sucursal inicia sesión</span>
+            <span class="form-error" id="error-suc-usuario" style="display:none"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Contraseña</label>
+            <div class="input-password-wrap">
+              <input type="text" class="form-input" id="suc-password" placeholder="Contraseña" autocomplete="new-password" required>
+            </div>
+            <span class="form-error" id="error-suc-password" style="display:none"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="window.SucursalesPage.cerrarModalSucursal()">Cancelar</button>
+        <button type="submit" class="btn btn-gold">Guardar sucursal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- =============================================
+     TOAST CONTAINER
+============================================= -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script>
+  window.UI = {
+    mostrarToast(mensaje, tipo = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${tipo}`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${tipo === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
+            tipo === 'danger'  ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        <span>${mensaje}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="../js/revendedoras/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared/formato-numero.js"></script>
+<script src="../js/sucursales/sucursales-page.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Auth.inicializar();
+    window.Auth.inyectarSidebar();
+    window.SucursalesPage.inicializar();
+  });
+</script>
+
+</body>
+</html>

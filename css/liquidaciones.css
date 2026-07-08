@@ -1,0 +1,629 @@
+/* =========================================================
+   liquidaciones.css — Luna de Plata
+   ========================================================= */
+
+/* ---- Stat cards ---- */
+.liq-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+}
+
+/* ---- Toolbar ---- */
+.liq-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.liq-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ---- Accordion (per reseller) ---- */
+.liq-group {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+}
+
+.liq-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+  background: var(--color-surface);
+}
+
+.liq-group-header:hover {
+  background: var(--color-surface-2);
+}
+
+.liq-group-header.open {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.liq-group-name {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+
+.liq-group-saldo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.liq-group-saldo.saldo-positivo {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.liq-group-saldo.saldo-cero {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.liq-group-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.liq-group-header.open .liq-group-chevron {
+  transform: rotate(180deg);
+}
+
+.liq-group-body {
+  display: none;
+}
+
+.liq-group-body.open {
+  display: block;
+}
+
+/* ---- Ledger Table ---- */
+.liq-table-wrap {
+  overflow-x: auto;
+  padding: var(--space-4) var(--space-6) var(--space-2);
+}
+
+.liq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 900px;
+}
+
+.liq-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.liq-table td {
+  padding: var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.liq-table tr:last-child td {
+  border-bottom: none;
+}
+
+.liq-table tr:hover td {
+  background: var(--color-surface-2);
+}
+
+.liq-table .col-num   { text-align: right; font-variant-numeric: tabular-nums; }
+.liq-table .col-fecha { white-space: nowrap; color: var(--color-text-secondary); }
+.liq-table .col-acciones { text-align: right; white-space: nowrap; }
+
+.liq-table .saldo-positivo { color: var(--color-danger); font-weight: 600; }
+.liq-table .saldo-negativo { color: var(--color-success); font-weight: 600; }
+.liq-table .saldo-cero     { color: var(--color-text-muted); }
+.liq-table .mora-dias      { color: var(--color-warning); font-weight: 600; }
+
+/* ---- Empty State ---- */
+.liq-empty-row td {
+  text-align: center;
+  padding: var(--space-8) !important;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ---- Group footer (add button) ---- */
+.liq-group-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-6) var(--space-4);
+  gap: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+/* ---- CIRCULO badges ---- */
+.circulo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.circulo-badge.oro {
+  background: #fff9e6;
+  color: #9a7200;
+  border: 1px solid #f0d060;
+}
+
+.circulo-badge.plata {
+  background: #f0f0f0;
+  color: #555;
+  border: 1px solid #ccc;
+}
+
+.circulo-badge.nc {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* ---- Modal liquidación ---- */
+.modal-liq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4) var(--space-5);
+}
+
+.modal-liq-grid .form-col-full {
+  grid-column: 1 / -1;
+}
+
+.liq-saldo-preview {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.liq-saldo-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.liq-saldo-preview-row strong {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.liq-saldo-preview-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-2) 0;
+}
+
+.liq-saldo-nuevo {
+  font-size: 16px !important;
+  font-weight: 700;
+  color: var(--color-gold-dark) !important;
+}
+
+.liq-saldo-nuevo.en-mora {
+  color: var(--color-danger) !important;
+}
+
+/* ---- Empty global state ---- */
+.liq-global-empty {
+  text-align: center;
+  padding: 80px var(--space-6);
+  color: var(--color-text-muted);
+}
+
+.liq-global-empty svg {
+  margin: 0 auto var(--space-4);
+  opacity: 0.3;
+}
+
+.liq-global-empty p {
+  font-size: 15px;
+  margin-bottom: var(--space-2);
+}
+
+.liq-global-empty small {
+  font-size: 13px;
+}
+
+/* ---- form-hint ---- */
+.form-hint {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ---- form-grid-2 override ---- */
+.form-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* =========================================================
+   LIQUIDACIONES V2 — Paño cards + Payments
+   ========================================================= */
+
+/* ---- Lista de paños por grupo ---- */
+.liq-panos-list {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.liq-empty-msg {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ---- Card de paño ---- */
+.liq-pano-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  transition: box-shadow var(--transition-fast);
+}
+
+.liq-pano-card:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+/* ---- Header del card ---- */
+.liq-pano-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  user-select: none;
+  background: var(--color-surface-2);
+  flex-wrap: wrap;
+}
+
+.liq-pano-header:hover {
+  background: #eeeeeb;
+}
+
+/* ---- Columna de info ---- */
+.liq-pano-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.liq-pano-info-lbl {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.liq-pano-info-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.liq-fecha-txt {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.liq-debe-val {
+  color: var(--color-danger);
+}
+
+.liq-pano-info-val.saldo-positivo { color: var(--color-danger); }
+.liq-pano-info-val.saldo-cero     { color: var(--color-success); }
+
+.liq-pano-mora-info {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-warning);
+  white-space: nowrap;
+}
+
+/* ---- Premio badge ---- */
+.liq-pano-premio {
+  font-size: 11.5px;
+  color: var(--color-gold-dark);
+  background: var(--color-gold-bg);
+  border: 1px solid var(--color-gold-light);
+  border-radius: var(--radius-full);
+  padding: 3px var(--space-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- Acciones del card ---- */
+.liq-pano-acciones {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ---- Chevron ---- */
+.liq-pano-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.liq-pano-card.expanded .liq-pano-chevron {
+  transform: rotate(180deg);
+}
+
+/* ---- Body del card (pagos) ---- */
+.liq-pano-body {
+  display: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.liq-pano-card.expanded .liq-pano-body {
+  display: block;
+}
+
+/* ---- Tabla de pagos ---- */
+.liq-pagos-table-wrap {
+  overflow-x: auto;
+  padding: var(--space-3) var(--space-4) var(--space-3);
+}
+
+.liq-pagos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 750px;
+}
+
+.liq-pagos-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.liq-pagos-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.liq-pagos-table tr:last-child td {
+  border-bottom: none;
+}
+
+.liq-pagos-table tr:hover td {
+  background: var(--color-surface-2);
+}
+
+.liq-pagos-table .col-num      { text-align: right; font-variant-numeric: tabular-nums; }
+.liq-pagos-table .col-fecha    { white-space: nowrap; color: var(--color-text-secondary); }
+.liq-pagos-table .col-acciones { text-align: right; white-space: nowrap; }
+
+.liq-pagos-table .saldo-positivo { color: var(--color-danger);  font-weight: 600; }
+.liq-pagos-table .saldo-cero     { color: var(--color-success); font-weight: 600; }
+.liq-pagos-table .mora-dias      { color: var(--color-warning); font-weight: 600; }
+
+/* ---- Empty de pagos ---- */
+.liq-pagos-empty {
+  text-align: center;
+  padding: var(--space-6) var(--space-8);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* ---- Notificaciones (campana) ---- */
+.notif-wrap {
+  position: relative;
+}
+
+.notif-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.notif-bell:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.notif-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  width: 340px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+}
+
+.notif-panel.open {
+  display: block;
+}
+
+.notif-panel-header {
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notif-panel-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: var(--color-surface-2);
+}
+
+.notif-item.notif-premio_elegible,
+.notif-item.notif-premio_sugerido {
+  border-left-color: var(--color-success);
+}
+
+.notif-item.notif-premio_perdido {
+  border-left-color: var(--color-danger);
+}
+
+.notif-item-icon {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.notif-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-item-msg {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+}
+
+.notif-item-dismiss {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.notif-item-dismiss:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+}
+
+.notif-empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* ---- Filas de adelanto en la tabla de pagos ---- */
+.liq-fila-adelanto td {
+  background: #f0fdf4;
+}
+
+.liq-adelanto-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: #dcfce7;
+  color: #15803d;
+  margin-right: 4px;
+  vertical-align: middle;
+}
