@@ -237,6 +237,75 @@
   gap: var(--space-2);
 }
 
+.card-menu-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* --- Menú de acciones de la card (portal, fuera del overflow de la card) --- */
+.card-menu-portal {
+  position: fixed;
+  z-index: 9999;
+  min-width: 220px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  padding: var(--space-2);
+  animation: cardMenuIn .12s ease;
+}
+
+@keyframes cardMenuIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--transition-fast);
+}
+
+.card-menu-item:hover {
+  background: var(--color-surface-2);
+}
+
+.card-menu-item svg {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.card-menu-item-danger {
+  color: var(--color-danger);
+}
+
+.card-menu-item-danger svg {
+  color: var(--color-danger);
+}
+
+.card-menu-item-danger:hover {
+  background: var(--color-danger-bg);
+}
+
+.card-menu-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-2) var(--space-1);
+}
+
 /* --- Paños lista en modal --- */
 .panos-list {
   display: flex;

@@ -38,6 +38,7 @@ let filtroBusqueda = '';
 let filtroHistAnio    = '';
 let filtroHistMes     = '';
 let filtroHistPersona = '';
+let filtroHistRevId   = null; // deep-link exacto desde la card de revendedora
 
 // =========================================================
 // INICIALIZACIÓN
@@ -147,7 +148,9 @@ function renderizarHistorial() {
   const grupos = [];
 
   revendedoras.forEach(rev => {
-    if (filtroHistPersona) {
+    if (filtroHistRevId) {
+      if (rev.id !== filtroHistRevId) return;
+    } else if (filtroHistPersona) {
       const q = filtroHistPersona.toLowerCase();
       if (!rev.nombre?.toLowerCase().includes(q) && !rev.localidad?.toLowerCase().includes(q)) return;
     }
@@ -171,6 +174,30 @@ function renderizarHistorial() {
   }
 
   el.innerHTML = `<div class="rev-grupos-list">${grupos.join('')}</div>`;
+}
+
+/**
+ * Deep-link desde la card de revendedora: filtra el historial a una sola
+ * revendedora y hace scroll hasta esa sección.
+ */
+function filtrarHistorialPorRevendedora(revId) {
+  const rev = window.Storage.obtenerRevendedoraPorId(revId);
+  if (!rev) return;
+
+  filtroHistRevId   = revId;
+  filtroHistPersona = '';
+  filtroHistAnio    = '';
+  filtroHistMes     = '';
+
+  const inputBusqueda = document.getElementById('hist-busqueda');
+  if (inputBusqueda) inputBusqueda.value = rev.nombre;
+  const selAnio = document.getElementById('hist-filtro-anio');
+  if (selAnio) selAnio.value = '';
+  const selMes = document.getElementById('hist-filtro-mes');
+  if (selMes) selMes.value = '';
+
+  renderizarHistorial();
+  document.querySelector('.historial-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // =========================================================
@@ -293,6 +320,10 @@ function renderizarPanoCard(pano) {
           <button class="btn btn-ghost btn-sm btn-editar-pano" data-id="${pano.id}">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Editar
+          </button>
+          <button class="btn btn-ghost btn-sm btn-imprimir-pano" data-id="${pano.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
           </button>
           ${!pano.cerrado ? `
           <button class="btn btn-ghost btn-sm btn-adelanto-pano" data-id="${pano.id}">
@@ -752,6 +783,7 @@ function vincularEventos() {
   });
   document.getElementById('hist-busqueda')?.addEventListener('input', e => {
     filtroHistPersona = e.target.value.trim();
+    filtroHistRevId = null; // editar el texto a mano cancela el deep-link exacto
     renderizarHistorial();
   });
 
@@ -801,6 +833,13 @@ function vincularEventos() {
       return;
     }
 
+    // Imprimir paño
+    if (e.target.closest('.btn-imprimir-pano')) {
+      const btn = e.target.closest('.btn-imprimir-pano');
+      _abrirImpresionPano(btn.dataset.id);
+      return;
+    }
+
     // Cerrar paño
     if (e.target.closest('.btn-cerrar-pano')) {
       const btn = e.target.closest('.btn-cerrar-pano');
@@ -821,6 +860,114 @@ function vincularEventos() {
       return;
     }
   }));
+}
+
+// =========================================================
+// IMPRESIÓN DE PAÑO
+// =========================================================
+
+function _abrirImpresionPano(panoId) {
+  const pano = window.Storage.obtenerPanoPorId(panoId);
+  if (!pano) return;
+  const rev = window.Storage.obtenerRevendedoraPorId(pano.revendedoraId);
+  const { formatearFecha, formatearNumeroPano, calcularResumenPano } = window.Calculos;
+
+  const categoriasHtml = CATS_PAGE.map(({ key, label }) => {
+    const items = pano.categorias?.[key];
+    if (!Array.isArray(items) || items.length === 0) return '';
+    return `
+      <div class="cat-block">
+        <div class="cat-titulo">${_esc(label)}</div>
+        <table>
+          <thead><tr><th>Producto</th><th>Descripción</th><th>Precio</th><th>Vendido</th></tr></thead>
+          <tbody>
+            ${items.map(i => `
+              <tr>
+                <td>${_esc(i.producto)}${i.pedidoEspecial ? ' <span class="tag">Pedido</span>' : ''}</td>
+                <td>${_esc(i.descripcion || '—')}</td>
+                <td>${i.precioVenta != null ? '$' + _fmt(i.precioVenta) : '—'}</td>
+                <td>${i.vendido ? 'Sí' : 'No'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }).join('');
+
+  const r = calcularResumenPano(pano);
+  const t = r.tiers[r.tierAplicable];
+
+  const resumenHtml = r.ventaTotal > 0 ? `
+    <div class="resumen">
+      <div class="resumen-row"><span>Monto total del paño</span><strong>$${_fmt(r.montoTotal)}</strong></div>
+      <div class="resumen-row"><span>Venta total</span><strong>$${_fmt(r.ventaTotal)}</strong></div>
+      <div class="resumen-row"><span>Porcentaje de venta</span><strong>${r.porcentajeVenta.toFixed(2)}%</strong></div>
+      <div class="resumen-row destacado"><span>Ganancia revendedora (${t.pctLabel})</span><strong>$${_fmt(t.gananciaTotal)}</strong></div>
+      <div class="resumen-row destacado"><span>A pagar a Luna de Plata</span><strong>$${_fmt(Math.max(0, t.pagaLunaDePlata))}</strong></div>
+    </div>` : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>${_esc(formatearNumeroPano(pano.numero))} — ${_esc(rev ? rev.nombre : '')}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px; color: #1a1a1a; }
+  .hoja { background: #fff; border: 2px solid #1a1a1a; border-radius: 10px; padding: 32px 36px; max-width: 720px; margin: 0 auto; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+  .cabecera { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #e0e0e0; padding-bottom: 14px; margin-bottom: 18px; }
+  .cabecera h1 { font-size: 22px; }
+  .cabecera .marca { color: #b8860b; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .8px; }
+  .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+  .info-item label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #888; margin-bottom: 3px; }
+  .info-item div { font-size: 15px; font-weight: 600; }
+  .cat-block { margin-bottom: 18px; }
+  .cat-titulo { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #b8860b; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 6px; border-bottom: 1px solid #eee; }
+  th { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: #888; }
+  .tag { font-size: 10px; background: #eee; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+  .resumen { margin-top: 24px; border-top: 2px solid #1a1a1a; padding-top: 14px; }
+  .resumen-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+  .resumen-row.destacado { font-size: 16px; font-weight: 700; }
+  .acciones { margin-top: 24px; display: flex; gap: 10px; }
+  .btn { padding: 9px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Arial, sans-serif; }
+  .btn-print { background: #1a1a1a; color: #fff; flex: 1; }
+  .btn-print:hover { background: #333; }
+  .btn-close { background: #f0f0f0; color: #555; }
+  .btn-close:hover { background: #e0e0e0; }
+  @page { margin: 16px; }
+  @media print {
+    body { background: none; padding: 0; }
+    .hoja { box-shadow: none; border: 2px solid #000; max-width: 100%; }
+    .acciones { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="hoja">
+  <div class="cabecera">
+    <h1>${_esc(formatearNumeroPano(pano.numero))}</h1>
+    <span class="marca">Luna de Plata</span>
+  </div>
+  <div class="info-grid">
+    <div class="info-item"><label>Revendedora</label><div>${_esc(rev ? rev.nombre : '—')}</div></div>
+    <div class="info-item"><label>Fecha de entrega</label><div>${_esc(formatearFecha(pano.fechaEntrega))}</div></div>
+    <div class="info-item"><label>Preparado por</label><div>${_esc(pano.preparadoPor || '—')}</div></div>
+  </div>
+  ${categoriasHtml || '<p>Sin artículos cargados en este paño.</p>'}
+  ${resumenHtml}
+  <div class="acciones">
+    <button class="btn btn-print" onclick="window.print()">Imprimir</button>
+    <button class="btn btn-close" onclick="window.close()">Cerrar</button>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=820,height=900,resizable=yes,scrollbars=yes');
+  if (!win) { alert('El navegador bloqueó la ventana emergente. Permitila para imprimir.'); return; }
+  win.document.write(html);
+  win.document.close();
 }
 
 // =========================================================
@@ -881,6 +1028,7 @@ window.PanosPage = {
   agregarItem,
   abrirModalAdelanto,
   guardarAdelanto,
+  filtrarHistorialPorRevendedora,
 };
 
 // =========================================================

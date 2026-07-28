@@ -10,12 +10,15 @@
 let _editLiqId  = null;
 let _pagoLiqId  = null;
 let _pagoPagoId = null;
+let _revFiltroId = null; // set vía ?rev=<id> — página dedicada de una sola revendedora
 
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
 
 function initLiquidaciones() {
+  _revFiltroId = new URLSearchParams(window.location.search).get('rev') || null;
+
   let _debugMsg = '';
 
   try {
@@ -109,18 +112,23 @@ function renderGrupos() {
   const contenedor = document.getElementById('liq-grupos');
   if (!contenedor) return;
 
-  const revs = window.Storage.obtenerRevendedoras();
+  let revs = window.Storage.obtenerRevendedoras();
+  if (_revFiltroId) revs = revs.filter(r => r.id === _revFiltroId);
   contenedor.innerHTML = '';
 
   if (!revs.length) {
-    contenedor.innerHTML = `
-      <div class="liq-global-empty">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-        <p>No hay revendedoras registradas</p>
-        <small>Agregá una revendedora en la sección Revendedoras.</small>
-      </div>`;
+    contenedor.innerHTML = _revFiltroId
+      ? `<div class="liq-global-empty">
+          <p>No se encontró la revendedora.</p>
+          <small><a href="liquidaciones.html">Volver a Liquidaciones</a></small>
+        </div>`
+      : `<div class="liq-global-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <p>No hay revendedoras registradas</p>
+          <small>Agregá una revendedora en la sección Revendedoras.</small>
+        </div>`;
     return;
   }
 
@@ -135,6 +143,11 @@ function renderGrupos() {
       contenedor.appendChild(errDiv);
     }
   });
+
+  // En la página dedicada de una sola revendedora, mostrar el grupo ya expandido.
+  if (_revFiltroId && revs.length === 1) {
+    toggleGrupo(revs[0].id);
+  }
 }
 
 function _buildGrupo(rev) {

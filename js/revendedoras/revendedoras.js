@@ -91,6 +91,13 @@ function renderizarCards() {
       window.location.href = `panos.html?nueva=true&rev=${encodeURIComponent(btn.dataset.id)}`;
     });
   });
+
+  contenedor.querySelectorAll('[data-action="menu"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      _abrirMenuCard(btn, btn.dataset.id);
+    });
+  });
 }
 
 /**
@@ -156,8 +163,128 @@ function renderizarCard(r) {
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Asignar Paño
         </button>
+        <button class="btn btn-ghost btn-icon btn-sm card-menu-btn" data-action="menu" data-id="${r.id}" title="Más acciones">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+        </button>
       </div>
     </div>`;
+}
+
+// =========================================================
+// MENÚ DE ACCIONES DE LA CARD (portal, fuera del overflow de la card)
+// =========================================================
+
+let _menuPortal = null;
+let _menuRevId  = null;
+
+function _getMenuPortal() {
+  if (!_menuPortal) {
+    _menuPortal = document.createElement('div');
+    _menuPortal.className = 'card-menu-portal';
+    _menuPortal.style.display = 'none';
+    document.body.appendChild(_menuPortal);
+
+    document.addEventListener('click', (e) => {
+      if (_menuPortal.style.display === 'none') return;
+      if (!_menuPortal.contains(e.target) && !e.target.closest('.card-menu-btn')) {
+        _cerrarMenuCard();
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') _cerrarMenuCard();
+    });
+    window.addEventListener('scroll', () => _cerrarMenuCard(), true);
+    window.addEventListener('resize', () => _cerrarMenuCard());
+  }
+  return _menuPortal;
+}
+
+function _cerrarMenuCard() {
+  if (_menuPortal) _menuPortal.style.display = 'none';
+  _menuRevId = null;
+}
+
+function _abrirMenuCard(btn, revId) {
+  // Toggle: si ya está abierto para esta misma revendedora, cerrarlo.
+  if (_menuRevId === revId && _menuPortal && _menuPortal.style.display !== 'none') {
+    _cerrarMenuCard();
+    return;
+  }
+
+  const rev = window.Storage.obtenerRevendedoraPorId(revId);
+  if (!rev) return;
+
+  const portal = _getMenuPortal();
+  _menuRevId = revId;
+
+  portal.innerHTML = `
+    <button class="card-menu-item" data-menu-accion="editar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Editar
+    </button>
+    <button class="card-menu-item" data-menu-accion="imprimir">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir datos
+    </button>
+    <button class="card-menu-item" data-menu-accion="historial">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      Ver historial de paños
+    </button>
+    <button class="card-menu-item" data-menu-accion="liquidaciones">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Ver liquidaciones
+    </button>
+    <div class="card-menu-divider"></div>
+    <button class="card-menu-item card-menu-item-danger" data-menu-accion="eliminar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Eliminar
+    </button>`;
+
+  portal.querySelectorAll('[data-menu-accion]').forEach(item => {
+    item.addEventListener('click', () => {
+      const accion = item.dataset.menuAccion;
+      _cerrarMenuCard();
+      _ejecutarAccionMenuCard(accion, rev);
+    });
+  });
+
+  portal.style.display = 'block';
+  const rect = btn.getBoundingClientRect();
+  const menuWidth = portal.offsetWidth;
+  let left = rect.right - menuWidth;
+  if (left < 8) left = 8;
+  let top = rect.bottom + 6;
+  if (top + portal.offsetHeight > window.innerHeight - 8) {
+    top = rect.top - portal.offsetHeight - 6;
+  }
+  portal.style.left = `${left}px`;
+  portal.style.top  = `${top}px`;
+}
+
+function _ejecutarAccionMenuCard(accion, rev) {
+  if (accion === 'editar') {
+    window.Formularios.abrirModalEditarRevendedora(rev);
+    return;
+  }
+  if (accion === 'imprimir') {
+    _abrirImpresionDatos(rev);
+    return;
+  }
+  if (accion === 'historial') {
+    window.location.href = `panos.html?verHistorial=true&rev=${encodeURIComponent(rev.id)}`;
+    return;
+  }
+  if (accion === 'liquidaciones') {
+    window.location.href = `liquidacion-revendedora.html?rev=${encodeURIComponent(rev.id)}`;
+    return;
+  }
+  if (accion === 'eliminar') {
+    if (!confirm(`¿Eliminar a "${rev.nombre}" y todos sus paños? Esta acción no se puede deshacer.`)) return;
+    window.Storage.eliminarRevendedora(rev.id);
+    renderizarCards();
+    actualizarEstadisticas();
+    window.UI.mostrarToast(`${rev.nombre} eliminada`, 'danger');
+  }
 }
 
 // =========================================================
@@ -277,17 +404,6 @@ function abrirVerRevendedora(id) {
   // Activar tab de info por defecto
   activarTab('tab-info');
 
-  // Renderizar paños
-  window.Panos.renderizarPanos(id);
-
-  // Botón asignar paño dentro del modal
-  const btnAsignar = document.getElementById('btn-asignar-pano-modal');
-  if (btnAsignar) {
-    btnAsignar.onclick = () => {
-      window.location.href = `panos.html?nueva=true&rev=${encodeURIComponent(rev.id)}`;
-    };
-  }
-
   // Botón imprimir datos de envío
   const btnImprimir = document.getElementById('btn-imprimir-datos-rev');
   if (btnImprimir) {
@@ -405,9 +521,20 @@ function vincularEventos() {
     elDiasAd.addEventListener('input', () => window.Formularios.actualizarPreviewFechas());
   }
 
-  // Tabs en el modal de ver
+  // Tabs en el modal de ver — "Paños" y "Liquidaciones" redirigen a su página completa
+  // en vez de mostrar una vista embebida (quedan chicas dentro del modal).
   document.querySelectorAll('.modal-tab').forEach(tab => {
-    tab.addEventListener('click', () => activarTab(tab.dataset.tab));
+    tab.addEventListener('click', () => {
+      if (tab.dataset.tab === 'tab-panos' && revendedoraActivaId) {
+        window.location.href = `panos.html?verHistorial=true&rev=${encodeURIComponent(revendedoraActivaId)}`;
+        return;
+      }
+      if (tab.dataset.tab === 'tab-liquidaciones' && revendedoraActivaId) {
+        window.location.href = `liquidacion-revendedora.html?rev=${encodeURIComponent(revendedoraActivaId)}`;
+        return;
+      }
+      activarTab(tab.dataset.tab);
+    });
   });
 }
 

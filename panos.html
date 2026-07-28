@@ -552,6 +552,13 @@
       // Limpiar la URL sin recargar
       history.replaceState({}, '', 'panos.html');
     }
+
+    // Si viene de revendedoras con ?verHistorial=true&rev=<id>, filtrar el historial
+    if (params.get('verHistorial') === 'true') {
+      const revId = params.get('rev') || null;
+      if (revId) setTimeout(() => window.PanosPage.filtrarHistorialPorRevendedora(revId), 100);
+      history.replaceState({}, '', 'panos.html');
+    }
   });
 </script>
 
