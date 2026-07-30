@@ -10,6 +10,7 @@
 let _editLiqId  = null;
 let _pagoLiqId  = null;
 let _pagoPagoId = null;
+let _deudaLiqId = null;
 let _revFiltroId = null; // set vía ?rev=<id> — página dedicada de una sola revendedora
 
 // =========================================================
@@ -45,10 +46,12 @@ function initLiquidaciones() {
     document.getElementById('liq-grupos')?.insertAdjacentHTML('afterbegin', _debugMsg);
   }
 
-  ['modal-liq-edit', 'modal-pago'].forEach(mId => {
+  ['modal-liq-edit', 'modal-pago', 'modal-deuda'].forEach(mId => {
     document.getElementById(mId)?.addEventListener('click', e => {
       if (e.target.id === mId) {
-        mId === 'modal-liq-edit' ? cerrarModalLiq() : cerrarModalPago();
+        if (mId === 'modal-liq-edit') cerrarModalLiq();
+        else if (mId === 'modal-pago') cerrarModalPago();
+        else cerrarModalDeuda();
       }
     });
   });
@@ -61,7 +64,7 @@ function initLiquidaciones() {
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { cerrarModalLiq(); cerrarModalPago(); }
+    if (e.key === 'Escape') { cerrarModalLiq(); cerrarModalPago(); cerrarModalDeuda(); }
   });
 
   document.getElementById('liq-edit-vta-total')?.addEventListener('input', _togglePremioWrap);
@@ -72,6 +75,7 @@ function initLiquidaciones() {
   document.getElementById('pago-fecha')?.addEventListener('change', _autoIntereses);
   ['pago-entrega','pago-varios-monto','pago-pago-extra','pago-intereses']
     .forEach(id => document.getElementById(id)?.addEventListener('input', _actualizarPreview));
+  document.getElementById('deuda-monto')?.addEventListener('input', _actualizarPreviewDeuda);
 }
 
 // =========================================================
@@ -241,6 +245,10 @@ function _buildPanoCard(revId, liq) {
           <button class="btn btn-gold btn-sm" title="Agregar pago" onclick="abrirModalNuevoPago('${liq.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Pago
+          </button>
+          <button class="btn btn-ghost btn-sm" title="Agregar deuda (varios)" onclick="abrirModalAgregarDeuda('${liq.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
+            Agregar deuda
           </button>
           <button class="btn btn-ghost btn-icon btn-sm" title="Editar liquidación" onclick="abrirModalEditarLiq('${liq.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -624,6 +632,85 @@ function guardarPago() {
 }
 
 // =========================================================
+// MODAL — AGREGAR DEUDA (solo Varios, sin pago)
+// =========================================================
+
+function abrirModalAgregarDeuda(liqId) {
+  const liq = window.Storage.obtenerLiquidacionV2PorId(liqId);
+  if (!liq) return;
+  const pano = window.Storage.obtenerPanoPorId(liq.panoId);
+  const panoLabel = pano ? window.Calculos.formatearNumeroPano(pano.numero) : '—';
+
+  _deudaLiqId = liqId;
+
+  const titulo = document.getElementById('modal-deuda-titulo');
+  if (titulo) titulo.textContent = `Agregar deuda — ${panoLabel}`;
+
+  document.getElementById('form-deuda')?.reset();
+  const errEl = document.getElementById('deuda-error');
+  if (errEl) errEl.style.display = 'none';
+  _actualizarPreviewDeuda();
+
+  document.getElementById('modal-deuda')?.classList.add('open');
+  setTimeout(() => document.getElementById('deuda-desc')?.focus(), 80);
+}
+
+function cerrarModalDeuda() {
+  document.getElementById('modal-deuda')?.classList.remove('open');
+  _deudaLiqId = null;
+}
+
+function _actualizarPreviewDeuda() {
+  if (!_deudaLiqId) return;
+  const liq = window.Storage.obtenerLiquidacionV2PorId(_deudaLiqId);
+  if (!liq) return;
+
+  const saldoAnterior = _calcularSaldoLiq(liq);
+  const monto         = _numVal('deuda-monto');
+  const nuevoSaldo     = Math.round((saldoAnterior + monto) * 100) / 100;
+
+  _setInner('deuda-saldo-anterior', _formatPesos(saldoAnterior));
+
+  const elNuevo = document.getElementById('deuda-saldo-nuevo');
+  if (elNuevo) {
+    elNuevo.textContent = _formatPesos(nuevoSaldo);
+    elNuevo.className   = 'liq-saldo-nuevo' + (nuevoSaldo > 0 ? ' en-mora' : '');
+  }
+}
+
+function guardarDeuda() {
+  if (!_deudaLiqId) return;
+
+  const desc  = document.getElementById('deuda-desc')?.value.trim() || '';
+  const monto = _numVal('deuda-monto');
+  const errEl = document.getElementById('deuda-error');
+
+  if (!desc || !monto) {
+    if (errEl) errEl.style.display = '';
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+
+  const datos = {
+    fecha:        new Date().toISOString().split('T')[0],
+    entrega:      0,
+    variosDesc:   desc,
+    variosMontos: monto,
+    pagoExtra:    0,
+    detalle:      '',
+    intereses:    0,
+    efectivo:     { billetes: {}, total: 0 },
+  };
+
+  const result = window.Storage.agregarPagoV2(_deudaLiqId, datos);
+  const revId  = result?.liq?.revendedoraId;
+
+  window.UI?.mostrarToast('Deuda agregada', 'success');
+  cerrarModalDeuda();
+  if (revId) { _refrescarGrupo(revId); renderStats(); }
+}
+
+// =========================================================
 // ELIMINAR
 // =========================================================
 
@@ -881,6 +968,9 @@ window.LiqPage = {
   guardarLiquidacion,
   guardarConfig,
   abrirModalNuevoPago,
+  abrirModalAgregarDeuda,
+  cerrarModalDeuda,
+  guardarDeuda,
   abrirModalEditarPago,
   cerrarModalPago,
   guardarPago,

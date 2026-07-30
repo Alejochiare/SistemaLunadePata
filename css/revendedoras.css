@@ -940,9 +940,30 @@
 }
 
 .item-acciones {
-  text-align: right;
+  text-align: left;
   white-space: nowrap;
-  width: 160px;
+  width: 230px;
+}
+
+.item-acciones-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.item-info-autor {
+  font-size: 10.5px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.item-vendido-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .btn-mc-cancelar {

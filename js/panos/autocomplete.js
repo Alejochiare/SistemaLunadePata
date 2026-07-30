@@ -33,14 +33,16 @@
 
     const disponible = abrirArriba ? espacioArriba : espacioAbajo;
 
+    // El portal es `position: fixed`, así que se posiciona relativo al viewport:
+    // getBoundingClientRect() ya da esas coordenadas, sin sumar el scroll de la página.
     if (abrirArriba) {
       p.style.top    = '';
-      p.style.bottom = `${window.innerHeight - rect.top - window.scrollY + 4}px`;
+      p.style.bottom = `${window.innerHeight - rect.top + 4}px`;
     } else {
       p.style.bottom = '';
-      p.style.top    = `${rect.bottom + window.scrollY + 4}px`;
+      p.style.top    = `${rect.bottom + 4}px`;
     }
-    p.style.left  = `${rect.left + window.scrollX}px`;
+    p.style.left  = `${rect.left}px`;
     p.style.width = `${Math.max(rect.width, 280)}px`;
 
     // El header (~28px) y el footer (~30px) restan espacio a la lista scrolleable.

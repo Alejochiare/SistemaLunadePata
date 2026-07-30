@@ -304,6 +304,7 @@ function _abrirImpresionDatos(rev) {
   body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; align-items: flex-start; justify-content: center; padding: 24px; min-height: 100vh; }
   .etiqueta { background: #fff; border: 2px solid #1a1a1a; border-radius: 10px; padding: 32px 36px; width: 480px; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
   .etiqueta-titulo { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 22px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .etiqueta-titulo img { display: block; height: 26px; width: auto; }
   .campo { margin-bottom: 18px; }
   .campo label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
   .campo input { width: 100%; border: none; border-bottom: 1.5px solid #ccc; font-size: 19px; font-weight: 600; color: #1a1a1a; padding: 4px 2px; background: transparent; outline: none; font-family: Arial, sans-serif; }
@@ -328,7 +329,7 @@ function _abrirImpresionDatos(rev) {
 <div class="etiqueta">
   <div class="etiqueta-titulo">
     <span>Datos de envío</span>
-    <span style="color:#b8860b">Luna de Plata</span>
+    <img src="img/logo-dark.png" alt="Luna de Plata">
   </div>
 
   <div class="campo">

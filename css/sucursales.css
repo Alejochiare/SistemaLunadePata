@@ -524,11 +524,10 @@
   box-shadow: var(--shadow-xs);
 }
 
-.portal-header-brand {
-  font-family: var(--font-display);
-  font-size: 17px;
-  color: var(--color-gold-dark);
-  font-weight: 600;
+.portal-header-brand-img {
+  display: block;
+  height: 28px;
+  width: auto;
 }
 
 .portal-header-sep {

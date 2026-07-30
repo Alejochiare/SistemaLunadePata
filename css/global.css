@@ -163,13 +163,19 @@ img {
   letter-spacing: -0.3px;
 }
 
+.sidebar-logo-img {
+  display: block;
+  width: 168px;
+  height: auto;
+}
+
 .sidebar-logo-sub {
   font-size: 11px;
   font-weight: 300;
   color: var(--sidebar-accent);
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 .sidebar-nav {

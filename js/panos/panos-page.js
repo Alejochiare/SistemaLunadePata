@@ -33,6 +33,7 @@ const GRUPOS_PAGE = [
 
 let filtroEstado   = 'todos';
 let filtroBusqueda = '';
+let filtroRevId    = null; // deep-link exacto desde la card de revendedora (sección principal)
 
 // Historial
 let filtroHistAnio    = '';
@@ -72,7 +73,9 @@ function renderizar() {
   const grupos = [];
 
   revendedoras.forEach(rev => {
-    if (filtroBusqueda) {
+    if (filtroRevId) {
+      if (rev.id !== filtroRevId) return;
+    } else if (filtroBusqueda) {
       const q = filtroBusqueda.toLowerCase();
       if (!rev.nombre?.toLowerCase().includes(q) && !rev.localidad?.toLowerCase().includes(q)) return;
     }
@@ -177,18 +180,23 @@ function renderizarHistorial() {
 }
 
 /**
- * Deep-link desde la card de revendedora: filtra el historial a una sola
- * revendedora y hace scroll hasta esa sección.
+ * Deep-link desde la card de revendedora: filtra toda la página (sección
+ * principal + historial) a una sola revendedora y hace scroll al historial.
  */
 function filtrarHistorialPorRevendedora(revId) {
   const rev = window.Storage.obtenerRevendedoraPorId(revId);
   if (!rev) return;
 
+  filtroRevId       = revId;
+  filtroBusqueda    = '';
+  filtroEstado      = 'todos';
   filtroHistRevId   = revId;
   filtroHistPersona = '';
   filtroHistAnio    = '';
   filtroHistMes     = '';
 
+  const inputBusquedaPrincipal = document.getElementById('busqueda-panos');
+  if (inputBusquedaPrincipal) inputBusquedaPrincipal.value = rev.nombre;
   const inputBusqueda = document.getElementById('hist-busqueda');
   if (inputBusqueda) inputBusqueda.value = rev.nombre;
   const selAnio = document.getElementById('hist-filtro-anio');
@@ -196,7 +204,7 @@ function filtrarHistorialPorRevendedora(revId) {
   const selMes = document.getElementById('hist-filtro-mes');
   if (selMes) selMes.value = '';
 
-  renderizarHistorial();
+  renderizar();
   document.querySelector('.historial-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -384,10 +392,7 @@ function _renderCategoriasPanoCard(pano) {
                 <td class="item-desc">${_esc(item.descripcion || '—')}</td>
                 <td class="item-precio-val">${item.precioVenta != null ? '$' + _fmt(item.precioVenta) : '—'}</td>
                 <td class="item-acciones">
-                  ${item.vendido
-                    ? '<span class="badge badge-success">Vendido</span>'
-                    : '<button class="btn btn-gold btn-sm btn-vender">Vendido</button>'
-                  }
+                  <div class="item-acciones-wrap">${_renderItemAccionesHtml(item)}</div>
                 </td>
               </tr>`).join('')}
           </table>
@@ -571,12 +576,49 @@ function confirmarVenta(btn) {
     fechaVenta: new Date().toISOString().split('T')[0],
   });
 
+  const panoActual = window.Storage.obtenerPanoPorId(panoId);
+  const itemActual = panoActual?.categorias?.[catKey]?.find(i => i.id === itemId);
+
   // Actualizar fila
   tr.classList.add('item-vendido');
   const tdAcciones = tr.querySelector('.item-acciones');
-  if (tdAcciones) tdAcciones.innerHTML = '<span class="badge badge-success">Vendido</span>';
+  if (tdAcciones && itemActual) {
+    tdAcciones.innerHTML = `<div class="item-acciones-wrap">${_renderItemAccionesHtml(itemActual)}</div>`;
+  }
+
+  if (panoActual) {
+    _actualizarSubtotal(panoId, catKey, panoActual);
+    _actualizarGrupoTotal(panoId, catKey, panoActual);
+    _actualizarProgresoCard(tr, panoActual);
+    _actualizarResumen(panoId, panoActual);
+  }
+
+  actualizarStats();
+}
+
+function revertirVenta(btn) {
+  const tr = btn.closest('.items-fila');
+  if (!tr) return;
+
+  const panoId = tr.dataset.panoId;
+  const catKey = tr.dataset.cat;
+  const itemId = tr.dataset.itemId;
+
+  window.Storage.actualizarItemPano(panoId, catKey, itemId, {
+    vendido:    false,
+    fechaVenta: null,
+  });
 
   const panoActual = window.Storage.obtenerPanoPorId(panoId);
+  const itemActual = panoActual?.categorias?.[catKey]?.find(i => i.id === itemId);
+
+  // Actualizar fila
+  tr.classList.remove('item-vendido');
+  const tdAcciones = tr.querySelector('.item-acciones');
+  if (tdAcciones && itemActual) {
+    tdAcciones.innerHTML = `<div class="item-acciones-wrap">${_renderItemAccionesHtml(itemActual)}</div>`;
+  }
+
   if (panoActual) {
     _actualizarSubtotal(panoId, catKey, panoActual);
     _actualizarGrupoTotal(panoId, catKey, panoActual);
@@ -769,6 +811,7 @@ function vincularEventos() {
   // Búsqueda sección principal
   document.getElementById('busqueda-panos')?.addEventListener('input', e => {
     filtroBusqueda = e.target.value.trim();
+    filtroRevId = null; // editar el texto a mano cancela el deep-link exacto
     renderizar();
   });
 
@@ -859,6 +902,12 @@ function vincularEventos() {
       confirmarVenta(e.target.closest('.btn-vender'));
       return;
     }
+
+    // Revertir venta (volver a "no vendido")
+    if (e.target.closest('.btn-revertir-venta')) {
+      revertirVenta(e.target.closest('.btn-revertir-venta'));
+      return;
+    }
   }));
 }
 
@@ -866,11 +915,22 @@ function vincularEventos() {
 // IMPRESIÓN DE PAÑO
 // =========================================================
 
+function _infoAutorTexto(item) {
+  if (item.modificadoPor && item.fechaModificacion) {
+    return `✎ ${item.modificadoPor} · ${_fechaCortaISO(item.fechaModificacion)}`;
+  }
+  if (item.agregadoPor && item.fechaAgregado) {
+    return `+ ${item.agregadoPor} · ${_fechaCortaISO(item.fechaAgregado)}`;
+  }
+  return '—';
+}
+
 function _abrirImpresionPano(panoId) {
   const pano = window.Storage.obtenerPanoPorId(panoId);
   if (!pano) return;
   const rev = window.Storage.obtenerRevendedoraPorId(pano.revendedoraId);
-  const { formatearFecha, formatearNumeroPano, calcularResumenPano } = window.Calculos;
+  const { formatearFecha, formatearNumeroPano, calcularResumenPano, calcularFechaVencimientoEfectiva } = window.Calculos;
+  const fechaVencimiento = calcularFechaVencimientoEfectiva(pano.fechaEntrega, pano.diasAdicionales);
 
   const categoriasHtml = CATS_PAGE.map(({ key, label }) => {
     const items = pano.categorias?.[key];
@@ -879,14 +939,16 @@ function _abrirImpresionPano(panoId) {
       <div class="cat-block">
         <div class="cat-titulo">${_esc(label)}</div>
         <table>
-          <thead><tr><th>Producto</th><th>Descripción</th><th>Precio</th><th>Vendido</th></tr></thead>
+          <thead><tr><th>Ord.</th><th>Producto</th><th>Descripción</th><th>Precio</th><th>Vendido</th><th>Agregado/modificado por</th></tr></thead>
           <tbody>
-            ${items.map(i => `
+            ${items.map((i, idx) => `
               <tr>
+                <td>${idx + 1}</td>
                 <td>${_esc(i.producto)}${i.pedidoEspecial ? ' <span class="tag">Pedido</span>' : ''}</td>
                 <td>${_esc(i.descripcion || '—')}</td>
                 <td>${i.precioVenta != null ? '$' + _fmt(i.precioVenta) : '—'}</td>
                 <td>${i.vendido ? 'Sí' : 'No'}</td>
+                <td>${_esc(_infoAutorTexto(i))}</td>
               </tr>`).join('')}
           </tbody>
         </table>
@@ -912,54 +974,57 @@ function _abrirImpresionPano(panoId) {
 <title>${_esc(formatearNumeroPano(pano.numero))} — ${_esc(rev ? rev.nombre : '')}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px; color: #1a1a1a; }
-  .hoja { background: #fff; border: 2px solid #1a1a1a; border-radius: 10px; padding: 32px 36px; max-width: 720px; margin: 0 auto; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
-  .cabecera { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #e0e0e0; padding-bottom: 14px; margin-bottom: 18px; }
-  .cabecera h1 { font-size: 22px; }
-  .cabecera .marca { color: #b8860b; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .8px; }
-  .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
-  .info-item label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #888; margin-bottom: 3px; }
-  .info-item div { font-size: 15px; font-weight: 600; }
-  .cat-block { margin-bottom: 18px; }
-  .cat-titulo { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #b8860b; margin-bottom: 6px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { text-align: left; padding: 5px 6px; border-bottom: 1px solid #eee; }
-  th { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: #888; }
-  .tag { font-size: 10px; background: #eee; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
-  .resumen { margin-top: 24px; border-top: 2px solid #1a1a1a; padding-top: 14px; }
-  .resumen-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
-  .resumen-row.destacado { font-size: 16px; font-weight: 700; }
-  .acciones { margin-top: 24px; display: flex; gap: 10px; }
+  body { font-family: Arial, sans-serif; background: #fff; padding: 20px 26px; color: #1a1a1a; font-size: 12px; }
+  .cabecera { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0; padding-bottom: 12px; margin-bottom: 16px; }
+  .cabecera h1 { font-size: 18px; }
+  .cabecera .marca-img { display: block; height: 34px; width: auto; }
+  .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+  .info-item label { display: block; font-size: 8.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #888; margin-bottom: 2px; }
+  .info-item div { font-size: 12px; font-weight: 600; }
+  .cat-block { margin-bottom: 14px; }
+  .cat-titulo { font-size: 9.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #b8860b; margin-bottom: 5px; }
+  table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 10.5px; }
+  th, td { text-align: left; padding: 3px 5px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  th { font-size: 8.5px; text-transform: uppercase; letter-spacing: .3px; color: #888; }
+  th:nth-child(1), td:nth-child(1) { width: 5%; text-align: center; }
+  th:nth-child(2), td:nth-child(2) { width: 25%; }
+  th:nth-child(3), td:nth-child(3) { width: 22%; }
+  th:nth-child(4), td:nth-child(4) { width: 13%; text-align: right; }
+  th:nth-child(5), td:nth-child(5) { width: 10%; text-align: center; }
+  th:nth-child(6), td:nth-child(6) { width: 25%; text-align: right; white-space: normal; }
+  .tag { font-size: 8.5px; background: #eee; border-radius: 4px; padding: 1px 4px; margin-left: 4px; }
+  .resumen { margin-top: 18px; border-top: 2px solid #1a1a1a; padding-top: 12px; }
+  .resumen-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; }
+  .resumen-row.destacado { font-size: 12.5px; font-weight: 700; }
+  .acciones { margin-top: 20px; display: flex; gap: 10px; }
   .btn { padding: 9px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Arial, sans-serif; }
   .btn-print { background: #1a1a1a; color: #fff; flex: 1; }
   .btn-print:hover { background: #333; }
   .btn-close { background: #f0f0f0; color: #555; }
   .btn-close:hover { background: #e0e0e0; }
-  @page { margin: 16px; }
+  @page { margin: 14px; }
   @media print {
-    body { background: none; padding: 0; }
-    .hoja { box-shadow: none; border: 2px solid #000; max-width: 100%; }
+    body { padding: 0; }
     .acciones { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="hoja">
-  <div class="cabecera">
-    <h1>${_esc(formatearNumeroPano(pano.numero))}</h1>
-    <span class="marca">Luna de Plata</span>
-  </div>
-  <div class="info-grid">
-    <div class="info-item"><label>Revendedora</label><div>${_esc(rev ? rev.nombre : '—')}</div></div>
-    <div class="info-item"><label>Fecha de entrega</label><div>${_esc(formatearFecha(pano.fechaEntrega))}</div></div>
-    <div class="info-item"><label>Preparado por</label><div>${_esc(pano.preparadoPor || '—')}</div></div>
-  </div>
-  ${categoriasHtml || '<p>Sin artículos cargados en este paño.</p>'}
-  ${resumenHtml}
-  <div class="acciones">
-    <button class="btn btn-print" onclick="window.print()">Imprimir</button>
-    <button class="btn btn-close" onclick="window.close()">Cerrar</button>
-  </div>
+<div class="cabecera">
+  <h1>${_esc(formatearNumeroPano(pano.numero))}</h1>
+  <img src="img/logo-dark.png" alt="Luna de Plata" class="marca-img">
+</div>
+<div class="info-grid">
+  <div class="info-item"><label>Revendedora</label><div>${_esc(rev ? rev.nombre : '—')}</div></div>
+  <div class="info-item"><label>Fecha de entrega</label><div>${_esc(formatearFecha(pano.fechaEntrega))}</div></div>
+  <div class="info-item"><label>Fecha de vencimiento</label><div>${_esc(formatearFecha(fechaVencimiento))}</div></div>
+  <div class="info-item"><label>Armado por</label><div>${_esc(pano.preparadoPor || '—')}</div></div>
+</div>
+${categoriasHtml || '<p>Sin artículos cargados en este paño.</p>'}
+${resumenHtml}
+<div class="acciones">
+  <button class="btn btn-print" onclick="window.print()">Imprimir</button>
+  <button class="btn btn-close" onclick="window.close()">Cerrar</button>
 </div>
 </body>
 </html>`;
@@ -995,6 +1060,46 @@ function _esc(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+/**
+ * HTML del botón/badge de "Vendido" (con su botón de revertir si corresponde)
+ * más la info de autor. Única fuente de verdad: la usan tanto el render
+ * completo de la card como confirmarVenta/revertirVenta al actualizar en vivo.
+ */
+function _renderItemAccionesHtml(item) {
+  const botonHtml = item.vendido
+    ? `<span class="item-vendido-wrap">
+         <span class="badge badge-success">Vendido</span>
+         <button class="btn btn-ghost btn-icon btn-sm btn-revertir-venta" title="Marcar como no vendido">
+           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+         </button>
+       </span>`
+    : '<button class="btn btn-gold btn-sm btn-vender">Vendido</button>';
+  return `${botonHtml}${_infoAutorItem(item)}`;
+}
+
+/**
+ * Texto chico que va al lado del botón/badge de "Vendido" con quién tocó
+ * este ítem por última vez y cuándo (modificación tiene prioridad sobre alta).
+ */
+function _infoAutorItem(item) {
+  if (item.modificadoPor && item.fechaModificacion) {
+    return `<div class="item-info-autor" title="Modificado por ${_esc(item.modificadoPor)} el ${_fechaCortaISO(item.fechaModificacion, true)}">✎ ${_esc(item.modificadoPor)} · ${_fechaCortaISO(item.fechaModificacion)}</div>`;
+  }
+  if (item.agregadoPor && item.fechaAgregado) {
+    return `<div class="item-info-autor" title="Agregado por ${_esc(item.agregadoPor)} el ${_fechaCortaISO(item.fechaAgregado, true)}">+ ${_esc(item.agregadoPor)} · ${_fechaCortaISO(item.fechaAgregado)}</div>`;
+  }
+  return '';
+}
+
+function _fechaCortaISO(iso, conAnio = false) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('es-AR', conAnio
+    ? { day: '2-digit', month: '2-digit', year: 'numeric' }
+    : { day: '2-digit', month: '2-digit' });
 }
 
 function _iniciales(nombre) {
@@ -1205,12 +1310,15 @@ function guardarPano() {
     categorias,
   };
 
+  const nuevaFecha = new Date().toISOString();
+
   if (_modalEditId) {
     const panoAnterior = window.Storage.obtenerPanoPorId(_modalEditId);
+    _aplicarAtribucionItems(panoAnterior, datos, modificadoPor, nuevaFecha);
     const cambios = _calcularDiff(panoAnterior, datos);
 
     const nuevaMod = {
-      fecha:       new Date().toISOString(),
+      fecha:       nuevaFecha,
       por:         modificadoPor,
       cambios,
     };
@@ -1227,7 +1335,8 @@ function guardarPano() {
     window.Storage.actualizarPano(_modalEditId, datos);
     window.UI.mostrarToast('Paño actualizado', 'success');
   } else {
-    // Nuevo
+    // Nuevo: marcar quién agregó cada ítem (quien preparó el paño)
+    _aplicarAtribucionItems(null, datos, preparadoPor, nuevaFecha);
     window.Storage.guardarPano(datos);
     window.UI.mostrarToast('Paño creado', 'success');
   }
@@ -1349,6 +1458,55 @@ function _recolectarCategoria(key) {
 
 function _limpiarErrores() {
   document.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+}
+
+// =========================================================
+// ATRIBUCIÓN POR ÍTEM (quién agregó / modificó cada producto)
+// =========================================================
+
+/**
+ * Completa (in place) cada ítem de datosNuevo.categorias con quién lo agregó
+ * y/o modificó por última vez, comparando contra panoViejo (o null si es un
+ * paño recién creado). También preserva vendido/fechaVenta, que el
+ * formulario de edición no conoce y si no se restauran quedan pisados.
+ */
+function _aplicarAtribucionItems(panoViejo, datosNuevo, autor, fechaIso) {
+  CATS_FORM.forEach(key => {
+    const viejos = Array.isArray(panoViejo?.categorias?.[key]) ? panoViejo.categorias[key] : [];
+    const nuevos = Array.isArray(datosNuevo?.categorias?.[key]) ? datosNuevo.categorias[key] : [];
+    const viejosMap = Object.fromEntries(viejos.map(i => [i.id, i]));
+
+    nuevos.forEach(item => {
+      const viejo = viejosMap[item.id];
+
+      if (!viejo) {
+        // Ítem nuevo: todavía no puede estar vendido, se marca quién lo agregó.
+        item.agregadoPor   = autor || null;
+        item.fechaAgregado = fechaIso;
+        return;
+      }
+
+      // El formulario no conoce el estado de venta ni el alta original: se preservan.
+      item.vendido        = viejo.vendido || false;
+      item.fechaVenta      = viejo.fechaVenta || null;
+      item.agregadoPor     = viejo.agregadoPor || null;
+      item.fechaAgregado   = viejo.fechaAgregado || null;
+
+      const huboCambio =
+        (viejo.producto || '')          !== (item.producto || '')      ||
+        (viejo.descripcion || '')       !== (item.descripcion || '')   ||
+        String(viejo.precioVenta ?? '') !== String(item.precioVenta ?? '') ||
+        (viejo.pedidoEspecial || false) !== (item.pedidoEspecial || false);
+
+      if (huboCambio) {
+        item.modificadoPor     = autor || null;
+        item.fechaModificacion = fechaIso;
+      } else {
+        item.modificadoPor     = viejo.modificadoPor || null;
+        item.fechaModificacion = viejo.fechaModificacion || null;
+      }
+    });
+  });
 }
 
 // =========================================================
