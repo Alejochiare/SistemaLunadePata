@@ -236,16 +236,46 @@ window.Nomenclaturas = {
   ],
 
   /**
+   * Sectores/categorías disponibles, con su etiqueta legible.
+   * Es la fuente única para poblar selectores (ej. en Configuración).
+   */
+  categorias: [
+    { key: 'anillos',                   label: 'ANILLOS' },
+    { key: 'aros',                      label: 'AROS' },
+    { key: 'cadenasConjuntos',          label: 'CADENAS Y CONJUNTOS' },
+    { key: 'dijes',                     label: 'DIJES' },
+    { key: 'pulseras',                  label: 'PULSERAS' },
+    { key: 'accesoriosGoldFabricacion', label: 'ACCESORIOS, GOLD FIELD Y FABRICACIÓN' },
+    { key: 'anillosAcero',              label: 'ANILLOS ACERO' },
+    { key: 'arosAcero',                 label: 'AROS ACERO' },
+    { key: 'cadenasAcero',              label: 'CADENAS Y CONJUNTOS ACERO' },
+    { key: 'dijesAcero',                label: 'DIJES ACERO' },
+    { key: 'pulserasAcero',             label: 'PULSERAS Y TOBILLERAS ACERO' },
+    { key: 'relojes',                   label: 'RELOJES, ABRIDORES CH' },
+    { key: 'joyasPersonalizadas',       label: 'JOYAS PERSONALIZADAS' },
+    { key: 'maryKay',                   label: 'PRODUCTOS MARY KAY' },
+    { key: 'precioFijoArreglos',        label: 'PRECIO FIJO/ARREGLOS/GRABADOS' },
+  ],
+
+  /**
+   * Nomenclaturas cargadas por el usuario desde Configuración, sumadas a las de fábrica.
+   */
+  obtenerPersonalizadas(catKey) {
+    return window.Storage?.obtenerNomenclaturasCustomDeCategoria?.(catKey) || [];
+  },
+
+  /**
    * Devuelve las sugerencias para una categoría que coincidan con el texto escrito.
    * Busca tanto en el código como en la descripción (insensible a mayúsculas/acentos).
+   * Combina las nomenclaturas de fábrica con las cargadas por el usuario en Configuración.
    */
   buscar(catKey, texto) {
-    const lista = this[catKey];
-    if (!lista || !lista.length || !texto.trim()) return [];
+    const lista = [...(this[catKey] || []), ...this.obtenerPersonalizadas(catKey)];
+    if (!lista.length || !texto.trim()) return [];
     const q = texto.trim().toLowerCase();
     return lista.filter(n =>
-      n.codigo.toLowerCase().includes(q) ||
-      n.descripcion.toLowerCase().includes(q)
+      (n.codigo || '').toLowerCase().includes(q) ||
+      (n.descripcion || '').toLowerCase().includes(q)
     ).slice(0, 10);
   },
 

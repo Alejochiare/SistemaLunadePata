@@ -15,6 +15,7 @@ const KEYS = {
   CIERRES_CAJA:    'ldp_cierres_caja',
   NOTIFICACIONES:  'ldp_notificaciones',
   SUCURSALES:      'ldp_sucursales',
+  NOMENCLATURAS:   'ldp_nomenclaturas_custom',
 };
 
 const SUCURSALES = ['Balnearia', 'Miramar', 'La Para'];
@@ -639,6 +640,53 @@ function _seedSucursalesIniciales() {
 }
 
 // =========================================================
+// NOMENCLATURAS PERSONALIZADAS (agregadas desde Configuración)
+// =========================================================
+
+/**
+ * Obtiene el mapa completo de nomenclaturas personalizadas por categoría.
+ * @returns {Object} { [catKey]: Array<{id, codigo, descripcion}> }
+ */
+function obtenerNomenclaturasCustom() {
+  return _leer(KEYS.NOMENCLATURAS) || {};
+}
+
+/**
+ * Obtiene las nomenclaturas personalizadas de una categoría puntual.
+ * @param {string} catKey
+ * @returns {Array}
+ */
+function obtenerNomenclaturasCustomDeCategoria(catKey) {
+  return obtenerNomenclaturasCustom()[catKey] || [];
+}
+
+/**
+ * Agrega una nomenclatura personalizada a una categoría.
+ * @param {string} catKey
+ * @param {{codigo:string, descripcion:string}} datos
+ * @returns {Object} nomenclatura con id asignado
+ */
+function agregarNomenclaturaCustom(catKey, datos) {
+  const todas = obtenerNomenclaturasCustom();
+  const lista = todas[catKey] || [];
+  const nueva = { ...datos, id: generarId(), creadaEn: new Date().toISOString() };
+  todas[catKey] = [...lista, nueva];
+  _guardar(KEYS.NOMENCLATURAS, todas);
+  return nueva;
+}
+
+/**
+ * Elimina una nomenclatura personalizada de una categoría.
+ * @param {string} catKey
+ * @param {string} id
+ */
+function eliminarNomenclaturaCustom(catKey, id) {
+  const todas = obtenerNomenclaturasCustom();
+  todas[catKey] = (todas[catKey] || []).filter(n => n.id !== id);
+  _guardar(KEYS.NOMENCLATURAS, todas);
+}
+
+// =========================================================
 // CIERRES DE CAJA
 // =========================================================
 
@@ -908,6 +956,11 @@ window.Storage = {
   eliminarSucursal,
   obtenerUsuariosDeSucursal,
   inicializarSucursales: _seedSucursalesIniciales,
+
+  obtenerNomenclaturasCustom,
+  obtenerNomenclaturasCustomDeCategoria,
+  agregarNomenclaturaCustom,
+  eliminarNomenclaturaCustom,
 
   SUCURSALES,
   calcularNumeroPano,

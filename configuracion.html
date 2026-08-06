@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estadísticas — Luna de Plata</title>
+  <title>Configuración — Luna de Plata</title>
   <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/estadisticas.css">
+  <link rel="stylesheet" href="css/revendedoras.css">
+  <link rel="stylesheet" href="css/configuracion.css">
 
   <!-- Guard: redirigir si no hay sesión de admin -->
   <script>
@@ -59,15 +60,13 @@
         </svg>
         Liquidaciones
       </a>
- <a href="estadisticas.html" class="sidebar-nav-item active">
+
+      <a href="estadisticas.html" class="sidebar-nav-item">
         <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <line x1="18" y1="20" x2="18" y2="10"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="6"  y1="20" x2="6"  y2="14"/>
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
         </svg>
         Estadísticas
       </a>
-
 
       <a href="sucursales.html" class="sidebar-nav-item">
         <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -77,7 +76,7 @@
         Sucursales
       </a>
 
-      <a href="configuracion.html" class="sidebar-nav-item">
+      <a href="configuracion.html" class="sidebar-nav-item active">
         <svg class="sidebar-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -102,47 +101,105 @@
       <div class="page-header-breadcrumb">
         <span>Luna de Plata</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        <span>Estadísticas</span>
+        <span>Configuración</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-gold" onclick="window.ConfiguracionPage.abrirModalNueva()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva nomenclatura
+        </button>
       </div>
     </header>
 
     <!-- Body -->
     <div class="page-body">
 
-      <!-- Filtros -->
-      <div class="est-filtros">
-        <span class="est-filtros-label">Filtrar por:</span>
-        <select class="form-input" id="est-filtro-anio">
-          <option value="">Todos los años</option>
-        </select>
-        <select class="form-input" id="est-filtro-mes">
-          <option value="">Todos los meses</option>
-        </select>
+      <div class="section-toolbar" style="margin-bottom: var(--space-3)">
+        <h2 class="section-title">Nomenclaturas de productos</h2>
+      </div>
+      <p class="config-intro">
+        Acá se cargan los códigos y descripciones que aparecen como sugerencia al completar un paño.
+        Elegí el sector (ej. Anillos, Aros, Cadenas...) y agregá las nomenclaturas nuevas que necesites:
+        van a estar disponibles al instante en el formulario de paños de todas las sucursales y revendedoras.
+      </p>
+
+      <!-- Toolbar: sector + búsqueda -->
+      <div class="config-toolbar">
+        <div class="form-group">
+          <label class="form-label" for="config-categoria">Sector</label>
+          <select class="form-select" id="config-categoria">
+            <!-- Poblado por JS -->
+          </select>
+        </div>
+        <div class="form-group search">
+          <label class="form-label" for="config-busqueda">Buscar</label>
+          <input type="text" class="form-input" id="config-busqueda" placeholder="Buscar por código o descripción...">
+        </div>
       </div>
 
-      <!-- KPI cards -->
-      <div class="est-kpis" id="est-kpis">
-        <!-- Renderizado por JS -->
+      <div class="section-toolbar">
+        <h2 class="section-title">Nomenclaturas del sector</h2>
+        <span class="section-count" id="nom-count">0</span>
       </div>
 
-      <!-- Ranking de revendedoras -->
-      <div class="est-section" id="est-ranking">
-        <!-- Renderizado por JS -->
-      </div>
-
-      <!-- Lo más vendido por categoría -->
-      <div class="est-section" id="est-categorias">
-        <!-- Renderizado por JS -->
-      </div>
-
-      <!-- Evolución mensual -->
-      <div class="est-section" id="est-evolucion">
+      <div id="nomenclaturas-lista" class="nom-list">
         <!-- Renderizado por JS -->
       </div>
 
     </div><!-- /page-body -->
   </main><!-- /main-content -->
 </div><!-- /app-layout -->
+
+
+<!-- =============================================
+     MODAL — NUEVA NOMENCLATURA
+============================================= -->
+<div class="modal-overlay" id="modal-nomenclatura">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Nueva nomenclatura</h2>
+        <p class="modal-subtitle">Se suma a las sugerencias del sector elegido</p>
+      </div>
+      <button class="modal-close" onclick="window.ConfiguracionPage.cerrarModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-nomenclatura" novalidate>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label class="form-label required" for="nom-sector">Sector</label>
+          <select class="form-select" id="nom-sector" required>
+            <!-- Poblado por JS -->
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="nom-codigo">Código</label>
+            <input type="text" class="form-input" id="nom-codigo" placeholder="Ej: APDU" maxlength="12">
+            <span class="form-hint">Opcional. Se convierte a mayúsculas automáticamente.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="nom-descripcion">Descripción</label>
+            <input type="text" class="form-input" id="nom-descripcion" placeholder="Ej: ANILLO PLATA 925 (DUBLE)" required>
+            <span class="form-error" id="error-nom-descripcion" style="display:none"></span>
+          </div>
+        </div>
+
+        <div class="nom-preview" id="nom-preview-wrap" style="display:none">
+          Va a aparecer como: <strong id="nom-preview-texto"></strong>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="window.ConfiguracionPage.cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-gold">Guardar nomenclatura</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 <!-- =============================================
@@ -179,18 +236,16 @@
 
 <script src="js/revendedoras/storage.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/revendedoras/calculos.js"></script>
-<script src="js/shared/formato-numero.js"></script>
-<script src="js/estadisticas/estadisticas-page.js"></script>
+<script src="js/panos/nomenclaturas.js"></script>
+<script src="js/configuracion/configuracion-page.js"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     window.Auth.inicializar();
     window.Auth.inyectarSidebar();
-    window.EstadisticasPage.inicializar();
+    window.ConfiguracionPage.inicializar();
   });
 </script>
 
 </body>
 </html>
-

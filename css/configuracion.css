@@ -1,0 +1,88 @@
+/**
+ * configuracion.css — Luna de Plata
+ * Estilos de la sección Configuración (alta de nomenclaturas por sector).
+ */
+
+.config-intro {
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+  max-width: 640px;
+  margin-bottom: var(--space-5);
+  line-height: 1.5;
+}
+
+.config-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.config-toolbar .form-group {
+  margin-bottom: 0;
+  min-width: 260px;
+}
+
+.config-toolbar .form-group.search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.nom-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.nom-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.nom-codigo {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-gold-dark);
+  min-width: 60px;
+}
+
+.nom-codigo.empty {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.nom-desc {
+  flex: 1;
+  font-size: 13.5px;
+  color: var(--color-text-primary);
+}
+
+.nom-row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.nom-preview {
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gold-bg);
+  border: 1px solid var(--color-gold-light);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.nom-preview strong {
+  color: var(--color-text-primary);
+  font-family: monospace;
+}
